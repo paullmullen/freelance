@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tag Match</ion-title>
+      <ion-button fill="clear" slot="end" (click)="onCancel()">Cancel</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="8" offset="2">
+        <h2>{{utteranceString}}</h2>
+        <br />
+        <ion-text color="primary"
+          >Which of the tags below best matches the utterance above?</ion-text
+        >
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col
+        size-md="8"
+        offset-md="2"
+        class="ion-text-center"
+        *ngIf="isLoading"
+      >
+        <ion-spinner color="primary"></ion-spinner>
+      </ion-col>
+      <ion-col
+        size-md="8"
+        offset-md="8"
+        *ngIf="!isLoading && (!loadedTags || loadedTags.length <= 0)"
+        class="ion-text-center"
+      >
+        <p>No Tags found!</p>
+      </ion-col>
+      <ion-col
+        size-md="8"
+        offset-md="2"
+        class="ion-text-center"
+        *ngIf="!isLoading && loadedTags && loadedTags.length > 0"
+      >
+        <ion-list>
+          <div *ngFor="let tag of loadedTags">
+            <ion-item>
+              <ion-buttons>
+                <ion-button
+                expand="block"
+                shape="round"
+                color="primary"
+                (click)="onTagSelected(utteranceId, tag.tagText, utteranceString)"
+                >
+                <ion-icon slot="start" [icon]="tag.icon"></ion-icon>
+                <p>{{ tag.tagText }}</p>
+              </ion-button>
+            </ion-buttons>
+
+            </ion-item>
+          </div>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

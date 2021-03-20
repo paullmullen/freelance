@@ -8,10 +8,10 @@ describe('new App', () => {
   });
   describe('default screen', () => {
     beforeEach(() => {
-      page.navigateTo('/Inbox');
+      page.navigateTo('/Bam');
     });
-    it('should say Inbox', () => {
-      expect(page.getParagraphText()).toContain('Inbox');
+    it('should say Bam', () => {
+      expect(page.getParagraphText()).toContain('Bam');
     });
   });
 });
