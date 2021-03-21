@@ -19,6 +19,7 @@ export class FolderPage implements OnInit {
   toDo = new FormControl('');
   messageSent = '';
   messageReceived = '';
+  isRecording = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -57,16 +58,26 @@ export class FolderPage implements OnInit {
           this.speechRecognition.requestPermission();
         }
         console.log(available);
-
+      });
     // Start the recognition process
     this.speechRecognition
       .startListening()
       .subscribe((matches: Array<string>) => {
         this.toDo.setValue(matches[0]);
       });
+    this.isRecording = true;
   }
 
+
+  stopListening() {
+    this.speechRecognition.stopListening().then(() => {
+      this.isRecording = false;
+    });
+  }
+
+
   onBam() {
+    this.stopListening();
     if (!this.toDo.value) {
       return;
     }
