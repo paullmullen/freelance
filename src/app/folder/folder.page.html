@@ -77,6 +77,7 @@
             <ion-button size="large" color="primary" (click)="getSpeech()">
               <ion-icon name="mic" slot="icon-only"></ion-icon>
             </ion-button>
+            <!-- Note that iOS requires a start/stop listening in a way that Android dies not -->
             <div *ngIf="isIos()">
               <ion-button size="large" color="danger" (click)="stopSpeech()">
                 <ion-icon name="mic-off" slot="icon-only"></ion-icon>

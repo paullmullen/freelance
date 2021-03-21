@@ -1,6 +1,6 @@
 import { UtteranceService } from './utterance.service';
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
-import { IonRouterOutlet, ModalController, Platform } from '@ionic/angular';
+import { IonRouterOutlet, ModalController, isPlatform } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
@@ -27,7 +27,6 @@ export class FolderPage implements OnInit {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private utteranceService: UtteranceService,
-    private platform: Platform
   ) {}
 
   ngOnInit() {
@@ -69,7 +68,7 @@ export class FolderPage implements OnInit {
   }
 
 
-  stopListening() {
+  stopListening() {   // Note that Stop listening is only required for iOS.
     this.speechRecognition.stopListening().then(() => {
       this.isRecording = false;
     });
@@ -103,7 +102,7 @@ export class FolderPage implements OnInit {
   }
 
   isIos() {
-    return this.platform.is('ios');
+    return isPlatform('ios');
   }
 
 }
