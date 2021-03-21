@@ -1,10 +1,11 @@
 import { UtteranceService } from './utterance.service';
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
+import { IonRouterOutlet, ModalController, Platform } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
 import { FormControl } from '@angular/forms';
+
 
 @Component({
   selector: 'app-folder',
@@ -24,7 +25,8 @@ export class FolderPage implements OnInit {
     private speechRecognition: SpeechRecognition,
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private utteranceService: UtteranceService
+    private utteranceService: UtteranceService,
+    private platform: Platform
   ) {}
 
   ngOnInit() {
@@ -50,7 +52,11 @@ export class FolderPage implements OnInit {
     // Check feature available
     this.speechRecognition
       .isRecognitionAvailable()
-      .then((available: boolean) => console.log(available));
+      .then((available: boolean) => {
+        if (!available) {
+          this.speechRecognition.requestPermission();
+        }
+        console.log(available);
 
     // Start the recognition process
     this.speechRecognition
@@ -84,4 +90,9 @@ export class FolderPage implements OnInit {
         });
       });
   }
+
+  isIos() {
+    return this.platform.is('ios');
+  }
+
 }
