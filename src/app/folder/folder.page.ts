@@ -58,6 +58,7 @@ export class FolderPage implements OnInit {
         }
         console.log(available);
       });
+      this.toDo.setValue('Listening...');
     // Start the recognition process
     this.speechRecognition
       .startListening()
