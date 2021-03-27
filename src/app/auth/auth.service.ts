@@ -22,15 +22,9 @@ export interface AuthResponseData {
 export class AuthService {
   private _user = new BehaviorSubject<User>(null);
 
-  constructor(private http: HttpClient, private storage: Storage) {}
-
-  async checkForStoredAuthToken() {
-    await this.storage.create();
-    console.log('storage length: ', await this.storage.length);
-  }
+  constructor(private http: HttpClient) {}
 
   get userIsAuthenticated() {
-    this.checkForStoredAuthToken();
     return this._user.asObservable().pipe(
       map((user) => {
         if (user) {
