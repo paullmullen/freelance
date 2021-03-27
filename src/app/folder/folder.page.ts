@@ -1,3 +1,5 @@
+import { take } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
 import { UtteranceService } from './utterance.service';
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
 import { IonRouterOutlet, ModalController, isPlatform } from '@ionic/angular';
@@ -27,6 +29,7 @@ export class FolderPage implements OnInit {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private utteranceService: UtteranceService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -46,6 +49,9 @@ export class FolderPage implements OnInit {
         );
       }
     });
+
+      console.log('auth:', this.authService.userIsAuthenticated);
+
   }
 
   getSpeech() {
@@ -81,7 +87,12 @@ export class FolderPage implements OnInit {
     if (!this.toDo.value) {
       return;
     }
-    this.modalController
+    this.authService.userId.pipe(take(1)).subscribe(userId => {
+      if (!userId) {
+        return;
+      }
+
+      this.modalController
       .create({
         component: DismissBamPage,
         componentProps: {
@@ -94,13 +105,15 @@ export class FolderPage implements OnInit {
       })
       .then((modalEl) => {
         modalEl.present().then((foo) => {
-          this.utteranceService.addUtterance(this.toDo.value, '');
+          this.utteranceService.addUtterance(this.toDo.value, '', userId);
           // .subscribe(() => {
-          //   modalEl.dismiss();
-          // })
+            //   modalEl.dismiss();
+            // })
+          });
         });
-      });
-  }
+      }
+      )
+    }
 
   isIos() {
     return isPlatform('ios');

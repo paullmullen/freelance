@@ -1,7 +1,0 @@
-export class Utterance {
-  constructor(
-    public id: string,
-    public utterance: string,
-    public tag: string
-  ) {}
-}

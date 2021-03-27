@@ -5,8 +5,10 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,11 +17,13 @@ import { AppRoutingModule } from './app-routing.module';
   declarations: [AppComponent],
   entryComponents: [],
   imports: [BrowserModule,
+            CommonModule,
             IonicModule.forRoot(),
             AppRoutingModule,
             DismissBamPageModule,
             FormsModule, ReactiveFormsModule,
             HttpClientModule,
+            IonicStorageModule.forRoot(),
            ],
   providers: [SpeechRecognition, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

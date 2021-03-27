@@ -54,7 +54,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
     this.TagSub = this.TagService.tags.subscribe((Tags) => {
       this.loadedTags = Tags;
     });
-    this.totalUtterances = this.UtteranceService.utteranceCount;
   }
 
 
@@ -71,8 +70,8 @@ export class MyStuffPage implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
-    console.log(this.listedLoadedUtterances.length);
-    // this.createBarChart();
+    this.totalUtterances = this.loadedUtterances.length;
+    this.createBarChart();
   }
 
   ngOnDestroy() {
@@ -134,53 +133,53 @@ export class MyStuffPage implements OnInit, OnDestroy {
     }
   }
 
-  // createBarChart() {
-  //   this.bars = new Chart(this.barChart.nativeElement, {
-  //     type: 'horizontalBar',
-  //     data: {
-  //       datasets: [
+  createBarChart() {
+    this.bars = new Chart(this.barChart.nativeElement, {
+      type: 'horizontalBar',
+      data: {
+        datasets: [
 
-  //           {
-  //           data: [this.totalUtterances],
-  //           backgroundColor: 'rgb(56, 128, 256)', // array should have same number of elements as number of dataset
-  //           barThickness: 10
-  //           },
-  //           {
-  //           data: [100],
-  //           backgroundColor: 'rgb(150,200,255)', // array should have same number of elements as number of dataset
-  //           barThickness: 10
-  //           }
+            {
+            data: [this.totalUtterances],
+            backgroundColor: 'rgb(56, 128, 256)', // array should have same number of elements as number of dataset
+            barThickness: 10
+            },
+            // {
+            // data: [100],
+            // backgroundColor: 'rgb(150,200,255)', // array should have same number of elements as number of dataset
+            // barThickness: 10
+            // }
 
-  //       ]
-  //     },
-  //     options: {
-  //       legend: {
-  //         display: false,
-  //       },
-  //       scales: {
-  //         xAxes: [
-  //           {
-  //             gridLines: {
-  //               display: false,
-  //             },
-  //             stacked: true,
+        ]
+      },
+      options: {
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+              stacked: true,
 
-  //             ticks: {
-  //               suggestedMax: 400,
-  //               display: false
-  //             }
-  //           },
-  //         ],
-  //         yAxes: [
-  //           {
-  //             gridLines: {
-  //               display: false,
-  //             },
-  //             stacked: true,
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   });
-  // }
+              ticks: {
+                suggestedMax: 500,
+                display: false
+              }
+            },
+          ],
+          yAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+              stacked: true,
+            },
+          ],
+        },
+      },
+    });
+  }
 }

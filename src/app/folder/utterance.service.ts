@@ -1,3 +1,4 @@
+import { User } from './../auth/user.model';
 import { Utterance } from './utterance.model';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +9,7 @@ interface UtteranceData {
   id: string;
   utterance: string;
   tag: string;
+  user: string;
 }
 
 @Injectable({
@@ -56,7 +58,8 @@ export class UtteranceService {
                 new Utterance(
                   key,
                   utterancesData[key].utterance,
-                  utterancesData[key].tag
+                  utterancesData[key].tag,
+                  utterancesData[key].user
                 )
               );
               this._utteranceCount++;
@@ -74,11 +77,12 @@ export class UtteranceService {
 
   // --------------------- additional utterance services---------------------
 
-  addUtterance(utteranceString: string, utteranceTag: string) {
+  addUtterance(utteranceString: string, utteranceTag: string, user: string) {
     const newUtterance = new Utterance(
       Math.random().toString(),
       utteranceString,
-      utteranceTag
+      utteranceTag,
+      user
     );
     this.http
       .post<UtteranceData>(
@@ -95,7 +99,7 @@ export class UtteranceService {
 
     // ---------------------------- additional tags services -------------------------
 
-    updateTag(uttId: string, newTag: string, newUtterance: string) {
+    updateTag(uttId: string, newTag: string, newUtterance: string, user: string) {
       let updatedUtterances: Utterance[];
       return this.utterances
         .pipe(
@@ -109,7 +113,8 @@ export class UtteranceService {
             updatedUtterances[updatedUtteranceIndex] = new Utterance(
               oldUtterance.id,
               oldUtterance.utterance,
-              newTag
+              newTag,
+              user
             );
             return this.http.patch(
               `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,

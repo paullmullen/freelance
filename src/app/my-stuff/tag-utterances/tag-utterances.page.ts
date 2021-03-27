@@ -54,14 +54,14 @@ export class TagUtterancesPage implements OnInit {
     }
   }
 
-  onTagSelected(uttId: string, newTag: string, newUtterance: string) {
+  onTagSelected(uttId: string, newTag: string, newUtterance: string, user: string) {
     this.loadingCtrl
       .create({
         message: 'Updating tag...',
       })
       .then((loadingEl) => {
         loadingEl.present();
-        this.UtteranceService.updateTag(uttId, newTag, null);
+        this.UtteranceService.updateTag(uttId, newTag, null, user);
         loadingEl.dismiss();
         this.ModalController.dismiss({
           dismissed: true,

@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TagUtterancesPageRoutingModule } from './tag-utterances-routing.module';
+import { AuthPageRoutingModule } from './auth-routing.module';
 
-import { TagUtterancesPage } from './tag-utterances.page';
+import { AuthPage } from './auth.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TagUtterancesPageRoutingModule
+    AuthPageRoutingModule
   ],
-  declarations: [TagUtterancesPage]
+  declarations: [AuthPage]
 })
-export class TagUtterancesPageModule {}
+export class AuthPageModule {}

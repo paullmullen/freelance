@@ -7,12 +7,9 @@ import { Component } from '@angular/core';
 export class AppComponent {
   public appPages = [
     { title: 'Say anything', url: '/folder/Bam', icon: 'chatbubble' },
-    // { title: 'Talk with me', url: '/chatbot', icon: 'chatbubble' },
     { title: 'See your stuff', url: '/my-stuff', icon: 'apps' },
     { title: 'Profile', url: '/folder/Profile', icon: 'person' },
-    { title: 'SignIn/SignUp', url: '/folder/SignIn', icon: 'log-in' },
-    // { title: 'Spam', url: '/folder/Spam', icon: 'warning' },
+    { title: 'SignIn/SignUp', url: '/auth', icon: 'log-in' },
   ];
-//  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor() {}
 }
