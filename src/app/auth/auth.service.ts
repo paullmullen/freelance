@@ -6,6 +6,7 @@ import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { User } from './user.model';
 
+import { StorageService } from './../storage.service';
 export interface AuthResponseData {
   kind: string;
   idToken: string;
@@ -22,9 +23,20 @@ export interface AuthResponseData {
 export class AuthService {
   private _user = new BehaviorSubject<User>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private storage: StorageService) {}
 
   get userIsAuthenticated() {
+    this.storage.create();
+    this.storage.setObject('tag', 'I am a tag')
+      .then( result => {
+        console.log('saved to local storage');
+      });
+    this.storage.getObject('tag')
+      .then( result => {
+        console.log('saved tag was: ', result);
+      });
     return this._user.asObservable().pipe(
       map((user) => {
         if (user) {
