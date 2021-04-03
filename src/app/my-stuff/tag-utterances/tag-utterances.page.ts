@@ -21,6 +21,7 @@ export class TagUtterancesPage implements OnInit {
   isLoading = false;
   private TagSub: Subscription;
   private UtteranceSub: Subscription;
+  private user: string;
 
   @Input() utteranceString: string;
   @Input() utteranceId: string;
@@ -39,6 +40,8 @@ export class TagUtterancesPage implements OnInit {
     this.UtteranceSub = this.UtteranceService.utterances.subscribe((Utterances) => {
       this.loadedUtterances = Utterances;
     });
+    this.user = JSON.parse(localStorage.getItem('user')).uid;
+
   }
 
   ionViewWillEnter() {
@@ -54,14 +57,14 @@ export class TagUtterancesPage implements OnInit {
     }
   }
 
-  onTagSelected(uttId: string, newTag: string, newUtterance: string, user: string) {
+  onTagSelected(uttId: string, newTag: string, newUtterance: string) {
     this.loadingCtrl
       .create({
         message: 'Updating tag...',
       })
       .then((loadingEl) => {
         loadingEl.present();
-        this.UtteranceService.updateTag(uttId, newTag, null, user);
+        this.UtteranceService.updateTag(uttId, newTag, null, this.user);
         loadingEl.dismiss();
         this.ModalController.dismiss({
           dismissed: true,

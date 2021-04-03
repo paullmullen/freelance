@@ -7,7 +7,7 @@ export const environment = {
   trelloReminderList:   '600a2789b22e9883998f5675',
   googleMapsAPIKey:     'AIzaSyDHEmVscwMOWvNaXm3m6pb1_jRW_vU2ahA',
   // firebaseAPIKey: 'AIzaSyDDx-H5p3yZYtEcL5iQa527Js4jwwJq72g'   // for ionic
-  firebaseConfig = {
+  firebaseConfig : {
     apiKey: "AIzaSyBO0prOy86P3kVz5OFa0zaUoipokGhE7dk",
     authDomain: "freelance-fe04c.firebaseapp.com",
     databaseURL: "https://freelance-fe04c-default-rtdb.firebaseio.com",
