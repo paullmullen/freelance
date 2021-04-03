@@ -24,7 +24,6 @@ export class AuthenticationService {
       if (user) {
         this.userData = user;
         localStorage.setItem('user', JSON.stringify(this.userData));
-        console.log(user);
       } else {
         localStorage.setItem('user', null);
         JSON.parse(localStorage.getItem('user'));
@@ -34,7 +33,9 @@ export class AuthenticationService {
 
   // Login in with email/password
   SignIn(email, password) {
-    return this.ngFireAuth.signInWithEmailAndPassword(email, password);
+    return this.ngFireAuth.signInWithEmailAndPassword(email, password).then(userCred => {
+      localStorage.setItem('user', JSON.stringify(this.userData));
+    });
   }
 
   // Register user with email/password
@@ -77,6 +78,7 @@ export class AuthenticationService {
   // Returns true when user's email is verified
   get isEmailVerified(): boolean {
     const user = JSON.parse(localStorage.getItem('user'));
+    console.log('Local Storage User: ', user);
     return user.emailVerified !== false ? true : false;
   }
 
