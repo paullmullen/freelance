@@ -1,5 +1,5 @@
 import { take } from 'rxjs/operators';
-import { AuthService } from '../auth/auth.service';
+import { AuthenticationService } from '../auth/auth.service';
 import { UtteranceService } from './utterance.service';
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
 import { IonRouterOutlet, ModalController, isPlatform } from '@ionic/angular';
@@ -8,20 +8,20 @@ import { ActivatedRoute } from '@angular/router';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
 import { FormControl } from '@angular/forms';
 
-
 @Component({
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
 })
-
-
 export class FolderPage implements OnInit {
   public folder: string;
   toDo = new FormControl('');
   messageSent = '';
   messageReceived = '';
   isRecording = false;
+  usersName: string;
+  usersEmail: string;
+  usersUid: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -29,7 +29,6 @@ export class FolderPage implements OnInit {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private utteranceService: UtteranceService,
-    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -49,9 +48,12 @@ export class FolderPage implements OnInit {
         );
       }
     });
+  }
 
-      console.log('auth:', this.authService.userIsAuthenticated);
-
+  ionViewWillEnter(){
+    this.usersName = JSON.parse(localStorage.getItem('user')).displayName;
+    this.usersEmail = JSON.parse(localStorage.getItem('user')).email;
+    this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
   }
 
   getSpeech() {
@@ -64,7 +66,7 @@ export class FolderPage implements OnInit {
         }
         console.log(available);
       });
-      this.toDo.setValue('Listening...');
+    this.toDo.setValue('Listening...');
     // Start the recognition process
     this.speechRecognition
       .startListening()
@@ -74,25 +76,24 @@ export class FolderPage implements OnInit {
     this.isRecording = true;
   }
 
-
-  stopListening() {   // Note that Stop listening is only required for iOS.
+  stopListening() {
+    // Note that Stop listening is only required for iOS.
     this.speechRecognition.stopListening().then(() => {
       this.isRecording = false;
     });
   }
-
 
   onBam() {
     this.stopListening();
     if (!this.toDo.value) {
       return;
     }
-    this.authService.userId.pipe(take(1)).subscribe(userId => {
-      if (!userId) {
-        return;
-      }
+    // this.authService.userId.pipe(take(1)).subscribe((userId) => {
+    //   if (!userId) {
+    //     return;
+    //   }
 
-      this.modalController
+    this.modalController
       .create({
         component: DismissBamPage,
         componentProps: {
@@ -105,18 +106,15 @@ export class FolderPage implements OnInit {
       })
       .then((modalEl) => {
         modalEl.present().then((foo) => {
-          this.utteranceService.addUtterance(this.toDo.value, '', userId);
+          this.utteranceService.addUtterance(this.toDo.value, '', this.usersUid);
           // .subscribe(() => {
-            //   modalEl.dismiss();
-            // })
-          });
+          //   modalEl.dismiss();
+          // })
         });
-      }
-      )
-    }
+      });
+  }
 
   isIos() {
     return isPlatform('ios');
   }
-
 }

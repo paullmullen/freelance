@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>You've done this before.</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="10" offset="1">
+        <br><p>Welcome to the family.</p>
+        <ol>
+        <li>You just set up a new account. Easy, right?</li><br>
+        <li>
+          So now we've sent an email to you to make sure you're not a robot.</li><br>
+          <li>
+          You confirm your humanity in that email, and bam! You're be all set.
+        </li><br>
+      </ol><br>
+      <p>If you don't get the verification email, try the resend link below.</p>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col size="10" offset="1">
+        <ion-button
+          type="submit"
+          (click)="authService.SendVerificationMail()"
+          expand="block"
+          fill="clear"
+          color="primary"
+        >
+          Resend Verification Email
+        </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

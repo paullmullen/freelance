@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Trying to escape?</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="8" offset="2" class="ion-text-center">
+          <p>
+            Sure you wanna go?
+          </p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="8" offset="2" class="ion-text-center">
+          <ion-button fill="clear" color="primary" (click)="signOut()">I'm outta here.</ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+</ion-content>

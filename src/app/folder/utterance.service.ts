@@ -1,4 +1,4 @@
-import { User } from './../auth/user.model';
+// import { User } from './../auth/user.model';
 import { Utterance } from './utterance.model';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
