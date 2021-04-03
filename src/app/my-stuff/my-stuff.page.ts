@@ -27,6 +27,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
   filteredUtterances: Utterance[];
   listedLoadedUtterances: Utterance[];
   totalUtterances: number;
+  private usersUid : string;
 
 
   private TagSub: Subscription;
@@ -47,8 +48,10 @@ export class MyStuffPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
       (Utterances) => {
+        // this is all of the utterances in the database.  Holding on to that for future team collab.
         this.loadedUtterances = Utterances;
-        this.listedLoadedUtterances = this.loadedUtterances;
+        // for now, filter just to those utterances that go with this user.
+        this.listedLoadedUtterances = this.loadedUtterances.filter((utter) => (utter.user === this.usersUid));
       }
     );
     this.TagSub = this.TagService.tags.subscribe((Tags) => {
@@ -67,6 +70,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
     this.TagService.getTags().subscribe(() => {
       this.isLoading = false;
     });
+    this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
   }
 
   ionViewDidEnter() {
@@ -109,16 +113,16 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   onFilterUpdate(event: any) {
     if (event.detail.value === 'all') {
-      this.filteredUtterances = this.loadedUtterances;
+      this.filteredUtterances = this.loadedUtterances.filter((utter) => (utter.user === this.usersUid));
       this.listedLoadedUtterances = this.filteredUtterances;
     } else if (event.detail.value === 'tagged') {
       this.filteredUtterances = this.loadedUtterances.filter(
-        (utter) => utter.tag.length > 0
+        (utter) => ((utter.tag.length > 0) && (utter.user === this.usersUid))
       );
       this.listedLoadedUtterances = this.filteredUtterances;
     } else {
       this.filteredUtterances = this.loadedUtterances.filter(
-        (utter) => utter.tag.length === 0
+        (utter) => ((utter.tag.length === 0) && (utter.user === this.usersUid))
       );
       this.listedLoadedUtterances = this.filteredUtterances;
     }
