@@ -68,7 +68,6 @@ export class TagService {
 
   addNewTag(tagString: string) {
     const newTagString = new TagData(Math.random().toString(), tagString, '');
-
     return this.http
       .post<TagData>(
         'https://freelance-fe04c-default-rtdb.firebaseio.com/tags.json',

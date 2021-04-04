@@ -4,6 +4,12 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>My Stuff</ion-title>
+    <ion-buttons slot="end">
+      <ion-label>Completed Items</ion-label>
+      <ion-toggle>
+
+      </ion-toggle>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -46,9 +52,8 @@
             *ngFor="let utterance of listedLoadedUtterances"
             #slidingUtterance
           >
-            <ion-item>
+            <ion-item *ngIf="utterance.tag.length>0">
               <ion-icon
-                *ngIf="utterance.tag.length>0"
                 slot="start"
                 icon="{{ getIconForTag(utterance.tag) }}"
                 color="primary"
@@ -61,7 +66,10 @@
               <ion-item-option
                 (click)="onTagUtterance(utterance.id, utterance.tag, utterance.utterance, slidingUtterance)"
               >
-                <ion-icon name="pricetag" slot="icon-only"></ion-icon>
+                <ion-icon name="pricetag-outline" slot="icon-only"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="secondary" (click)="onMarkComplete(utterance.id, slidingUtterance)">
+                <ion-icon name="checkbox-outline" slot="icon-only"></ion-icon>
               </ion-item-option>
             </ion-item-options>
           </ion-item-sliding>

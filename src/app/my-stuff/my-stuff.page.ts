@@ -17,8 +17,6 @@ import { FindValueSubscriber } from 'rxjs/internal/operators/find';
   templateUrl: './my-stuff.page.html',
   styleUrls: ['./my-stuff.page.scss'],
 })
-
-
 export class MyStuffPage implements OnInit, OnDestroy {
   isLoading = false;
 
@@ -27,15 +25,13 @@ export class MyStuffPage implements OnInit, OnDestroy {
   filteredUtterances: Utterance[];
   listedLoadedUtterances: Utterance[];
   totalUtterances: number;
-  private usersUid : string;
-
+  private usersUid: string;
 
   private TagSub: Subscription;
   loadedTags: TagData[];
 
   private bars: any;
   private colorArray: any;
-
 
   constructor(
     private UtteranceService: UtteranceService,
@@ -48,18 +44,24 @@ export class MyStuffPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
       (Utterances) => {
-        // this is all of the utterances in the database.  Holding on to that for future team collab.
-        this.loadedUtterances = Utterances;
-        // for now, filter just to those utterances that go with this user.
-        this.listedLoadedUtterances = this.loadedUtterances.filter((utter) => (utter.user === this.usersUid));
+        try {
+          if (Utterances) {
+            // this is all of the utterances in the database.  Holding on to that for future team collab.
+            this.loadedUtterances = Utterances;
+            // for now, filter just to those utterances that go with this user.
+            this.listedLoadedUtterances = this.loadedUtterances.filter(
+              (utter) => utter.user === this.usersUid
+            );
+          }
+        } catch (error) {
+          console.log('Error in ngOnInit in my-stuff.page.ts ', error);
+        }
       }
     );
     this.TagSub = this.TagService.tags.subscribe((Tags) => {
       this.loadedTags = Tags;
     });
   }
-
-
 
   ionViewWillEnter() {
     this.isLoading = true;
@@ -111,20 +113,33 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return;
   }
 
+  async onMarkComplete(id: string, slidingEl: IonItemSliding) {
+    slidingEl.close();
+    this.UtteranceService.markComplete(id);
+
+    return;
+  }
+
   onFilterUpdate(event: any) {
-    if (event.detail.value === 'all') {
-      this.filteredUtterances = this.loadedUtterances.filter((utter) => (utter.user === this.usersUid));
-      this.listedLoadedUtterances = this.filteredUtterances;
-    } else if (event.detail.value === 'tagged') {
-      this.filteredUtterances = this.loadedUtterances.filter(
-        (utter) => ((utter.tag.length > 0) && (utter.user === this.usersUid))
-      );
-      this.listedLoadedUtterances = this.filteredUtterances;
-    } else {
-      this.filteredUtterances = this.loadedUtterances.filter(
-        (utter) => ((utter.tag.length === 0) && (utter.user === this.usersUid))
-      );
-      this.listedLoadedUtterances = this.filteredUtterances;
+    try {
+      if (event.detail.value === 'all') {
+        this.filteredUtterances = this.loadedUtterances.filter(
+          (utter) => utter.user === this.usersUid
+        );
+        this.listedLoadedUtterances = this.filteredUtterances;
+      } else if (event.detail.value === 'tagged') {
+        this.filteredUtterances = this.loadedUtterances.filter(
+          (utter) => utter.tag.length > 0 && utter.user === this.usersUid
+        );
+        this.listedLoadedUtterances = this.filteredUtterances;
+      } else {
+        this.filteredUtterances = this.loadedUtterances.filter(
+          (utter) => utter.tag.length === 0 && utter.user === this.usersUid
+        );
+        this.listedLoadedUtterances = this.filteredUtterances;
+      }
+    } catch (error) {
+      console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }
   }
 
@@ -142,19 +157,17 @@ export class MyStuffPage implements OnInit, OnDestroy {
       type: 'horizontalBar',
       data: {
         datasets: [
-
-            {
+          {
             data: [this.totalUtterances],
             backgroundColor: 'rgb(56, 128, 256)', // array should have same number of elements as number of dataset
-            barThickness: 10
-            },
-            // {
-            // data: [100],
-            // backgroundColor: 'rgb(150,200,255)', // array should have same number of elements as number of dataset
-            // barThickness: 10
-            // }
-
-        ]
+            barThickness: 10,
+          },
+          // {
+          // data: [100],
+          // backgroundColor: 'rgb(150,200,255)', // array should have same number of elements as number of dataset
+          // barThickness: 10
+          // }
+        ],
       },
       options: {
         legend: {
@@ -170,8 +183,8 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
               ticks: {
                 suggestedMax: 500,
-                display: false
-              }
+                display: false,
+              },
             },
           ],
           yAxes: [

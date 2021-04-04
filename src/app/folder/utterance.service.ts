@@ -128,4 +128,25 @@ export class UtteranceService {
         .subscribe(() => console.log('Updated Tag'));
     }
 
+
+
+
+    markComplete(uttId: string) {
+      let updatedUtterances: Utterance[];
+      return this.utterances
+        .pipe(
+          take(1),
+          switchMap((utts) => {
+           return this.http.patch(
+              `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+              { complete: true, id: null }
+            );
+          }),
+          tap(() => {
+            this._utterances.next(updatedUtterances);
+          })
+        )
+        .subscribe(() => console.log('marked complete'));
+    }
+
 }
