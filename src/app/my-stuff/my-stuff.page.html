@@ -6,8 +6,10 @@
     <ion-title>My Stuff</ion-title>
     <ion-buttons slot="end">
       <ion-label>Completed Items</ion-label>
-      <ion-toggle>
-
+      <ion-toggle name="showCompletedItems"
+                  (ionChange)="onFilterUpdate($event)"
+                  value="toggleChanged"
+                  checked>
       </ion-toggle>
     </ion-buttons>
   </ion-toolbar>
@@ -52,14 +54,15 @@
             *ngFor="let utterance of listedLoadedUtterances"
             #slidingUtterance
           >
-            <ion-item *ngIf="utterance.tag.length>0">
+            <ion-item>
               <ion-icon
+                *ngIf="utterance.tag.length>0"
                 slot="start"
                 icon="{{ getIconForTag(utterance.tag) }}"
                 color="primary"
               ></ion-icon>
-              <ion-label color="dark">
-                <p>{{ utterance.utterance }}</p>
+              <ion-label color="dark" [style.text-decoration]="utterance.complete ? 'line-through' : 'none'">
+                {{ utterance.utterance }}<br>
               </ion-label>
             </ion-item>
             <ion-item-options>

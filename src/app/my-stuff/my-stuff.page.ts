@@ -32,6 +32,8 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   private bars: any;
   private colorArray: any;
+  private showDetailStatus = 'All';
+  private showCompletedStatus = false;
 
   constructor(
     private UtteranceService: UtteranceService,
@@ -121,23 +123,55 @@ export class MyStuffPage implements OnInit, OnDestroy {
   }
 
   onFilterUpdate(event: any) {
-    try {
-      if (event.detail.value === 'all') {
-        this.filteredUtterances = this.loadedUtterances.filter(
-          (utter) => utter.user === this.usersUid
-        );
-        this.listedLoadedUtterances = this.filteredUtterances;
-      } else if (event.detail.value === 'tagged') {
-        this.filteredUtterances = this.loadedUtterances.filter(
-          (utter) => utter.tag.length > 0 && utter.user === this.usersUid
-        );
-        this.listedLoadedUtterances = this.filteredUtterances;
+    if (event.detail.value === 'toggleChanged') {
+      // then the Completed Items toggle was changed
+      if (event.detail.checked) {
+        this.showCompletedStatus = true;
       } else {
-        this.filteredUtterances = this.loadedUtterances.filter(
-          (utter) => utter.tag.length === 0 && utter.user === this.usersUid
-        );
-        this.listedLoadedUtterances = this.filteredUtterances;
+        this.showCompletedStatus = false;
       }
+    } else {
+      this.showDetailStatus = event.detail.value;
+    }
+    try {
+      if (this.showCompletedStatus === true) {
+        // show all items
+        if (this.showDetailStatus === 'all') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.user === this.usersUid
+          );
+        } else if (this.showDetailStatus === 'tagged') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.tag.length > 0 && utter.user === this.usersUid
+          );
+        } else {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.tag.length === 0 && utter.user === this.usersUid
+          );
+        }
+      } else {
+        // only show non-completed items
+        if (this.showDetailStatus === 'all') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.user === this.usersUid && utter.complete === false
+          );
+        } else if (this.showDetailStatus === 'tagged') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              utter.tag.length > 0 &&
+              utter.user === this.usersUid &&
+              utter.complete === false
+          );
+        } else {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              utter.tag.length === 0 &&
+              utter.user === this.usersUid &&
+              utter.complete === false
+          );
+        }
+      }
+      this.listedLoadedUtterances = this.filteredUtterances;
     } catch (error) {
       console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }

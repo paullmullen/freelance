@@ -10,6 +10,7 @@ interface UtteranceData {
   utterance: string;
   tag: string;
   user: string;
+  complete: boolean;
 }
 
 @Injectable({
@@ -26,9 +27,7 @@ export class UtteranceService {
 
   @Output() utteranceCount = this._utteranceCount;
 
-
-
-  constructor(private http: HttpClient ) {}
+  constructor(private http: HttpClient) {}
 
   // ------------------------- Get Singles-------------------------
 
@@ -40,8 +39,6 @@ export class UtteranceService {
       })
     );
   }
-
-
 
   // ---------------------- Get Multiples -------------------------
   getUtterances() {
@@ -59,11 +56,11 @@ export class UtteranceService {
                   key,
                   utterancesData[key].utterance,
                   utterancesData[key].tag,
-                  utterancesData[key].user
+                  utterancesData[key].user,
+                  utterancesData[key].complete
                 )
               );
               this._utteranceCount++;
-
             }
           }
           return utterances;
@@ -74,7 +71,6 @@ export class UtteranceService {
       );
   }
 
-
   // --------------------- additional utterance services---------------------
 
   addUtterance(utteranceString: string, utteranceTag: string, user: string) {
@@ -82,7 +78,8 @@ export class UtteranceService {
       Math.random().toString(),
       utteranceString,
       utteranceTag,
-      user
+      user,
+      false   // initially new things are not complete
     );
     this.http
       .post<UtteranceData>(
@@ -97,56 +94,52 @@ export class UtteranceService {
     });
   }
 
-    // ---------------------------- additional tags services -------------------------
+  // ---------------------------- additional tags services -------------------------
 
-    updateTag(uttId: string, newTag: string, newUtterance: string, user: string) {
-      let updatedUtterances: Utterance[];
-      return this.utterances
-        .pipe(
-          take(1),
-          switchMap((utts) => {
-            const updatedUtteranceIndex = utts.findIndex(
-              (utt) => utt.id === uttId
-            );
-            updatedUtterances = [...utts];
-            const oldUtterance = updatedUtterances[updatedUtteranceIndex];
-            updatedUtterances[updatedUtteranceIndex] = new Utterance(
-              oldUtterance.id,
-              oldUtterance.utterance,
-              newTag,
-              user
-            );
-            return this.http.patch(
-              `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-              { tag: newTag, id: null }
-            );
-          }),
-          tap(() => {
-            this._utterances.next(updatedUtterances);
-          })
-        )
-        .subscribe(() => console.log('Updated Tag'));
-    }
+  updateTag(uttId: string, newTag: string, newUtterance: string, user: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          const oldUtterance = updatedUtterances[updatedUtteranceIndex];
+          updatedUtterances[updatedUtteranceIndex] = new Utterance(
+            oldUtterance.id,
+            oldUtterance.utterance,
+            newTag,
+            user
+          );
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { tag: newTag, id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log('Updated Tag'));
+  }
 
-
-
-
-    markComplete(uttId: string) {
-      let updatedUtterances: Utterance[];
-      return this.utterances
-        .pipe(
-          take(1),
-          switchMap((utts) => {
-           return this.http.patch(
-              `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-              { complete: true, id: null }
-            );
-          }),
-          tap(() => {
-            this._utterances.next(updatedUtterances);
-          })
-        )
-        .subscribe(() => console.log('marked complete'));
-    }
-
+  markComplete(uttId: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { complete: true, id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log('marked complete'));
+  }
 }
