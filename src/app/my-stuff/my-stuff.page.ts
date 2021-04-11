@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
 
-import { UtteranceService } from '../folder/utterance.service';
-import { Utterance } from './../folder/utterance.model';
+import { UtteranceService } from './../bam/utterance.service';
+import { Utterance } from './../bam/utterance.model';
 
 import { TagData } from './tag-utterances/tag.model';
 import { TagService } from './tag-utterances/tag.service';

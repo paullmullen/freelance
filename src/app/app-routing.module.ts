@@ -5,7 +5,7 @@ import { CanLoad, PreloadAllModules, RouterModule, Routes } from '@angular/route
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'folder/Bam',
+    redirectTo: 'bam',
     pathMatch: 'full'
   },
   {
@@ -47,6 +47,10 @@ const routes: Routes = [
   {
     path: 'signout',
     loadChildren: () => import('./signout/signout.module').then( m => m.SignoutPageModule)
+  },
+  {
+    path: 'bam',
+    loadChildren: () => import('./bam/bam.module').then( m => m.BamPageModule)
   }
 ];
 

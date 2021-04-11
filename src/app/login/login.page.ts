@@ -1,3 +1,4 @@
+import { NgForm } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../auth/auth.service';
@@ -15,9 +16,12 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {}
 
-  logIn(email, password) {
+  logIn(form: NgForm) {
+    if (!form.valid) {
+      return;
+    }
     this.authService
-      .SignIn(email.value, password.value)
+      .SignIn(form.value.email, form.value.password)
       .then((res) => {
         console.log('res: ', res);
         console.log('authService: ', this.authService);

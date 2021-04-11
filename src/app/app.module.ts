@@ -1,3 +1,4 @@
+import { FolderPageModule } from './folder/folder.module';
 import { TagUtterancesPageModule } from './my-stuff/tag-utterances/tag-utterances.module';
 import { environment } from './../environments/environment';
 import { DismissBamPageModule } from './dismiss-bam/dismiss-bam.module';
@@ -35,6 +36,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     TagUtterancesPageModule,
+    FolderPageModule,
+
   ],
   providers: [
     SpeechRecognition,

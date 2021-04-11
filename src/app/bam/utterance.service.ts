@@ -11,6 +11,9 @@ interface UtteranceData {
   tag: string;
   user: string;
   complete: boolean;
+  urgency: string;
+  importance: string;
+  project: string;
 }
 
 @Injectable({
@@ -57,7 +60,10 @@ export class UtteranceService {
                   utterancesData[key].utterance,
                   utterancesData[key].tag,
                   utterancesData[key].user,
-                  utterancesData[key].complete
+                  utterancesData[key].complete,
+                  utterancesData[key].urgency,
+                  utterancesData[key].importance,
+                  utterancesData[key].project
                 )
               );
               this._utteranceCount++;
@@ -73,13 +79,21 @@ export class UtteranceService {
 
   // --------------------- additional utterance services---------------------
 
-  addUtterance(utteranceString: string, utteranceTag: string, user: string) {
+  addUtterance(utteranceString: string,
+               utteranceTag: string,
+               user: string,
+               urgency: string,
+               importance: string,
+               project: string) {
     const newUtterance = new Utterance(
       Math.random().toString(),
       utteranceString,
       utteranceTag,
       user,
-      false   // initially new things are not complete
+      false,   // initially new things are not complete
+      urgency,
+      importance,
+      project
     );
     this.http
       .post<UtteranceData>(

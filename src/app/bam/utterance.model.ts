@@ -4,6 +4,9 @@ export class Utterance {
     public utterance: string,
     public tag: string,
     public user: string,
-    public complete?: boolean
+    public complete?: boolean,
+    public urgency?: string,
+    public importance?: string,
+    public project?: string
   ) {}
 }

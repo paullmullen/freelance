@@ -1,12 +1,4 @@
-import { take } from 'rxjs/operators';
-import { AuthenticationService } from '../auth/auth.service';
-import { UtteranceService } from './utterance.service';
-import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
-import { IonRouterOutlet, ModalController, isPlatform } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-folder',
@@ -14,107 +6,11 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./folder.page.scss'],
 })
 export class FolderPage implements OnInit {
-  public folder: string;
-  toDo = new FormControl('');
-  messageSent = '';
-  messageReceived = '';
-  isRecording = false;
-  usersName: string;
-  usersEmail: string;
-  usersUid: string;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private speechRecognition: SpeechRecognition,
-    private modalController: ModalController,
-    private routerOutlet: IonRouterOutlet,
-    private utteranceService: UtteranceService,
-  ) {}
+  constructor() { }
 
   ngOnInit() {
-    this.folder = this.activatedRoute.snapshot.paramMap.get('id');
-    if (this.folder === 'Bam') {
-      this.folder = 'Give me something to do.';
-    }
-    if (this.folder === 'Trello') {
-      this.folder = 'My Stuff';
-    }
-
-    this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
-      if (!hasPermission) {
-        this.speechRecognition.requestPermission().then(
-          () => console.log('Speech Recog Granted'),
-          () => console.log('Speech Recog Denied')
-        );
-      }
-    });
   }
 
-  ionViewWillEnter(){
-    this.usersName = JSON.parse(localStorage.getItem('user')).displayName;
-    this.usersEmail = JSON.parse(localStorage.getItem('user')).email;
-    this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
-  }
-
-  getSpeech() {
-    // Check feature available
-    this.speechRecognition
-      .isRecognitionAvailable()
-      .then((available: boolean) => {
-        if (!available) {
-          this.speechRecognition.requestPermission();
-        }
-        console.log(available);
-      });
-    this.toDo.setValue('Listening...');
-    // Start the recognition process
-    this.speechRecognition
-      .startListening()
-      .subscribe((matches: Array<string>) => {
-        this.toDo.setValue(matches[0]);
-      });
-    this.isRecording = true;
-  }
-
-  stopListening() {
-    // Note that Stop listening is only required for iOS.
-    this.speechRecognition.stopListening().then(() => {
-      this.isRecording = false;
-    });
-  }
-
-  onBam() {
-    this.stopListening();
-    if (!this.toDo.value) {
-      return;
-    }
-    // this.authService.userId.pipe(take(1)).subscribe((userId) => {
-    //   if (!userId) {
-    //     return;
-    //   }
-
-    this.modalController
-      .create({
-        component: DismissBamPage,
-        componentProps: {
-          messageSent: this.toDo.value,
-          messageReceived: this.toDo.value,
-        },
-        swipeToClose: true,
-        presentingElement: this.routerOutlet.nativeEl,
-        showBackdrop: true,
-      })
-      .then((modalEl) => {
-        modalEl.present().then((foo) => {
-          this.utteranceService.addUtterance(this.toDo.value, '', this.usersUid);
-          // .subscribe(() => {
-          //   modalEl.dismiss();
-          // })
-        });
-      });
-  }
-
-  isIos() {
-    return isPlatform('ios');
-  }
 }
+

@@ -1,5 +1,5 @@
-import { Utterance } from './../../folder/utterance.model';
-import { UtteranceService } from '../../folder/utterance.service';
+import { Utterance } from './../../bam/utterance.model';
+import { UtteranceService } from '../../bam/utterance.service';
 
 import { TagService } from '../tag-utterances/tag.service';
 import { TagData } from './tag.model';
