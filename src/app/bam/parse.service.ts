@@ -9,9 +9,9 @@ export class ParseService {
   // these hold the position within the utterance of the beginning and end of each token.
   private urgencyTokenPosition = { start: -1, stop: -1 };
   private importanceTokenPosition = { start: -1, stop: -1 };
-  // tokenPosition holds the position of one of hte projectMarkers below.
+  // tokenPosition holds the position of one of the projectMarkers below.
   // textPosition holds the location of the project text itself.
-  private projectTokenPosition = { start: -1, stop: -1 };
+  private projectTokenPosition = { start: -1, stop: -1 };  // -1 means undefined
   private projectTextPosition = { start: -1, stop: -1 };
   private importanceToken = '';
   private urgencyToken = '';
@@ -27,6 +27,8 @@ export class ParseService {
 
   lowImportancePhrases = [
     'low importance',
+    'is not important',
+    'is not very important',
     'not very important',
     'not important',
     'not high importance',

@@ -18,10 +18,6 @@ const routes: Routes = [
     loadChildren: () => import('./dismiss-bam/dismiss-bam.module').then( m => m.DismissBamPageModule),
     canLoad: [AuthGuard]
   },
-  // {
-  //   path: 'chatbot',
-  //   loadChildren: () => import('./chatbot/chatbot.module').then( m => m.ChatbotPageModule)
-  // },
   {
     path: 'my-stuff',
     loadChildren: () => import('./my-stuff/my-stuff.module').then( m => m.MyStuffPageModule),
