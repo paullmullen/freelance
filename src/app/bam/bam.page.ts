@@ -66,6 +66,7 @@ export class BamPage implements OnInit {
       .startListening()
       .subscribe((matches: Array<string>) => {
         this.toDo.utterance = matches[0];
+        console.log(matches[0]);
       });
     this.isRecording = true;
   }
@@ -126,8 +127,8 @@ export class BamPage implements OnInit {
                                             (this.parseService.getUrgency(this.toDo.utterance)) ? 'Urgent' : '', // urgency
                                             (this.parseService.getImportance(this.toDo.utterance)) ? 'Important' : '', // importance
                                             this.parseService.getProject(this.toDo.utterance) // project
-                                            );
 
+                                            );
         });
       });
   }
