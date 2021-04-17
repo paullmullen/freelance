@@ -26,6 +26,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
   listedLoadedUtterances: Utterance[];
   totalUtterances: number;
   private usersUid: string;
+  displayData: any;
 
   private TagSub: Subscription;
   loadedTags: TagData[];
@@ -51,10 +52,15 @@ export class MyStuffPage implements OnInit, OnDestroy {
             // this is all of the utterances in the database.  Holding on to that for future team collab.
             this.loadedUtterances = Utterances;
             // for now, filter just to those utterances that go with this user.
+            this.sortItems('project', 'asc');
+            this.sortItems('importance', 'dec');
+            this.sortItems('urgency', 'dec');
             this.listedLoadedUtterances = this.loadedUtterances.filter(
               (utter) => utter.user === this.usersUid
             );
           }
+          const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
+          this.displayData = Object.entries(getData);
         } catch (error) {
           console.log('Error in ngOnInit in my-stuff.page.ts ', error);
         }
@@ -62,6 +68,26 @@ export class MyStuffPage implements OnInit, OnDestroy {
     );
     this.TagSub = this.TagService.tags.subscribe((Tags) => {
       this.loadedTags = Tags;
+    });
+  }
+
+  groupMethod(array, fn) {
+    if (array) {
+      return array.reduce((acc, current) => {
+        const groupName = typeof fn === 'string' ? current[fn] : fn(current);
+        (acc[groupName] = acc[groupName] || []).push(current);
+        return acc;
+      }, {});
+    }
+  }
+
+  sortItems(prop, order) {
+    this.loadedUtterances.sort((a, b) => {
+      if (order === 'asc') {
+        return a[prop] > b[prop] ? 1 : a[prop] < b[prop] ? -1 : 0;
+      } else {
+        return b[prop] > a[prop] ? 1 : b[prop] < a[prop] ? -1 : 0;
+      }
     });
   }
 
@@ -126,6 +152,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
     if (event.detail.value === 'toggleChanged') {
       // then the Completed Items toggle was changed
       if (event.detail.checked) {
+        console.log('event detail', event.detail.checked);
         this.showCompletedStatus = true;
       } else {
         this.showCompletedStatus = false;
@@ -135,6 +162,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
     }
     try {
       if (this.showCompletedStatus === true) {
+        console.log('showing only completed');
         // show all items
         if (this.showDetailStatus === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
@@ -151,6 +179,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
         }
       } else {
         // only show non-completed items
+        console.log('showing incomplete only');
         if (this.showDetailStatus === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) => utter.user === this.usersUid && utter.complete === false
@@ -172,6 +201,10 @@ export class MyStuffPage implements OnInit, OnDestroy {
         }
       }
       this.listedLoadedUtterances = this.filteredUtterances;
+      const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
+      this.displayData = Object.entries(getData);
+      console.log(this.showCompletedStatus, this.showDetailStatus)
+
     } catch (error) {
       console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }

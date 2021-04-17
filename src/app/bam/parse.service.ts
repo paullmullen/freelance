@@ -20,6 +20,7 @@ export class ParseService {
     'very important',
     'is important',
     'mark as important',
+    'mark this as important',
     'this is important',
     'high importance',
     'important',
@@ -223,7 +224,7 @@ export class ParseService {
             this.projectMarkers[condition].length,
         };
         this.projectTextPosition = { start: pStart, stop: pEnd };
-        return this.toTitleCase(utterance.substring(pStart, pEnd));
+        return this.toTitleCase(utterance.substring(pStart, pEnd).replace('/[.,\/#!$%\^&\*;:{}=\-_`~()]/g',""));
       }
     }
     return '';
@@ -231,10 +232,15 @@ export class ParseService {
 
   getCleanUtterance(utterance: string) {
     if (this.importanceToken.length > 0) {
-      utterance.replace(this.importanceToken, ' ');
+      utterance = utterance.replace(this.importanceToken, ' ');
     }
     if (this.urgencyToken.length > 0) {
-      utterance.replace(this.importanceToken, ' ');
+      utterance = utterance.replace(this.urgencyToken, ' ');
+    }
+    if (this.projectMarkers.length > 0) {
+      console.log(this.projectTextPosition, this.projectTokenPosition);
+      const tempString = utterance.slice(this.projectTokenPosition.start, this.projectTextPosition.stop);
+      utterance = utterance.replace(tempString, '');
     }
     return utterance;
   }

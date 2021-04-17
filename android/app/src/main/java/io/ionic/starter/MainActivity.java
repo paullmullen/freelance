@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package net.visionclicks.freelance;
 
 import android.os.Bundle;
 

@@ -154,6 +154,6 @@ export class UtteranceService {
           this._utterances.next(updatedUtterances);
         })
       )
-      .subscribe(() => console.log('marked complete'));
+      .subscribe(() => console.log(uttId, ' marked complete'));
   }
 }

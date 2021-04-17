@@ -1,3 +1,4 @@
+import { FormGroup } from '@angular/forms';
 import { ParseService } from './parse.service';
 import { Utterance } from './utterance.model';
 
@@ -14,6 +15,7 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
   styleUrls: ['./bam.page.scss'],
 })
 export class BamPage implements OnInit {
+  form: FormGroup;
   public folder: string;
   messageSent = '';
   messageReceived = '';
@@ -23,6 +25,7 @@ export class BamPage implements OnInit {
   usersUid: string;
   toDo = new Utterance('', '', '', '', false, '', '', '');
   categoryExists = false;
+  tempString = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -34,14 +37,14 @@ export class BamPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
-      if (!hasPermission) {
-        this.speechRecognition.requestPermission().then(
-          () => console.log('Speech Recog Granted'),
-          () => console.log('Speech Recog Denied')
-        );
-      }
-    });
+    // this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
+    //   if (!hasPermission) {
+    //     this.speechRecognition.requestPermission().then(
+    //       () => console.log('Speech Recog Granted'),
+    //       () => console.log('Speech Recog Denied')
+    //     );
+    //   }
+    // });
   }
 
   ionViewWillEnter() {
@@ -52,6 +55,7 @@ export class BamPage implements OnInit {
 
   getSpeech() {
     // Check feature available
+    try {
     this.speechRecognition
       .isRecognitionAvailable()
       .then((available: boolean) => {
@@ -65,11 +69,13 @@ export class BamPage implements OnInit {
     this.speechRecognition
       .startListening()
       .subscribe((matches: Array<string>) => {
-        this.toDo.utterance = matches[0];
-        console.log(matches[0]);
+        this.tempString = matches[0] ;
       });
-    this.isRecording = true;
+    this.isRecording = false;
+  } catch (e) {
+    console.log(e);
   }
+}
 
   stopListening() {
     // Note that Stop listening is only required for iOS.
