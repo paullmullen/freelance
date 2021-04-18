@@ -1,4 +1,3 @@
-import { SegmentChangeEventDetail } from '@ionic/core';
 import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
 import { IonItemSliding, ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -10,7 +9,6 @@ import { Utterance } from './../bam/utterance.model';
 
 import { TagData } from './tag-utterances/tag.model';
 import { TagService } from './tag-utterances/tag.service';
-import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 
 @Component({
   selector: 'app-my-stuff',
@@ -33,13 +31,13 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   private bars: any;
   private colorArray: any;
-  private showDetailStatus = 'All';
+  showDetailStatus = 'All';
   private showCompletedStatus = false;
 
   constructor(
     private UtteranceService: UtteranceService,
     private TagService: TagService,
-    private modalController: ModalController
+    private modalController: ModalController,
   ) {}
 
   @ViewChild('barChart') barChart;
@@ -93,7 +91,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     this.isLoading = true;
-    this.UtteranceService.getUtterances().subscribe(() => {
+    this.UtteranceService.getUtterances().subscribe((utts) => {
       this.isLoading = false;
     });
     this.isLoading = true;
@@ -145,24 +143,29 @@ export class MyStuffPage implements OnInit, OnDestroy {
     slidingEl.close();
     this.UtteranceService.markComplete(id);
 
+    // the database is updated, now update the local array of utterances.
+    this.loadedUtterances.forEach(item => {
+      if(item.id === id) {
+        item.complete = true;
+      }
+    })
     return;
   }
 
   onFilterUpdate(event: any) {
+    if (event!==0) {
     if (event.detail.value === 'toggleChanged') {
       // then the Completed Items toggle was changed
       if (event.detail.checked) {
-        console.log('event detail', event.detail.checked);
         this.showCompletedStatus = true;
       } else {
         this.showCompletedStatus = false;
       }
     } else {
       this.showDetailStatus = event.detail.value;
-    }
+    }}
     try {
       if (this.showCompletedStatus === true) {
-        console.log('showing only completed');
         // show all items
         if (this.showDetailStatus === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
@@ -179,7 +182,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
         }
       } else {
         // only show non-completed items
-        console.log('showing incomplete only');
         if (this.showDetailStatus === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) => utter.user === this.usersUid && utter.complete === false
@@ -203,8 +205,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
       this.listedLoadedUtterances = this.filteredUtterances;
       const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
       this.displayData = Object.entries(getData);
-      console.log(this.showCompletedStatus, this.showDetailStatus)
-
     } catch (error) {
       console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }

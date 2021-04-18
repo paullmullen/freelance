@@ -65,7 +65,7 @@
           >
             <ion-item>
               <ion-icon
-                *ngIf="item_sub?.tag.length>0"
+                *ngIf="(item_sub?.tag.length>0) && (showDetailStatus==='tagged')"
                 slot="start"
                 icon="{{ getIconForTag(item_sub?.tag) }}"
                 color="primary"
