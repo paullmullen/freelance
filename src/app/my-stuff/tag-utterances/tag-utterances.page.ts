@@ -68,7 +68,13 @@ export class TagUtterancesPage implements OnInit {
         loadingEl.dismiss();
         this.ModalController.dismiss({
           dismissed: true,
-        });
+        // the cloud database is updated, now update the local array of utterances.
+      });
+        this.loadedUtterances.forEach(item => {
+        if (item.id === uttId) {
+          item.tag = newTag;
+        }
+      });
       });
   }
 

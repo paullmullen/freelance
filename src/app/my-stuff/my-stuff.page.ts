@@ -1,8 +1,13 @@
 import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
-import { IonItemSliding, ModalController } from '@ionic/angular';
+import {
+  IonItemSliding,
+  ModalController,
+  IonReorderGroup,
+} from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
+import { ItemReorderEventDetail } from '@ionic/core';
 
 import { UtteranceService } from './../bam/utterance.service';
 import { Utterance } from './../bam/utterance.model';
@@ -17,7 +22,6 @@ import { TagService } from './tag-utterances/tag.service';
 })
 export class MyStuffPage implements OnInit, OnDestroy {
   isLoading = false;
-
   private UtteranceSub: Subscription;
   loadedUtterances: Utterance[];
   filteredUtterances: Utterance[];
@@ -37,10 +41,11 @@ export class MyStuffPage implements OnInit, OnDestroy {
   constructor(
     private UtteranceService: UtteranceService,
     private TagService: TagService,
-    private modalController: ModalController,
+    private modalController: ModalController
   ) {}
 
   @ViewChild('barChart') barChart;
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   ngOnInit() {
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
@@ -57,7 +62,10 @@ export class MyStuffPage implements OnInit, OnDestroy {
               (utter) => utter.user === this.usersUid
             );
           }
-          const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
+          const getData = this.groupMethod(
+            this.listedLoadedUtterances,
+            'project'
+          );
           this.displayData = Object.entries(getData);
         } catch (error) {
           console.log('Error in ngOnInit in my-stuff.page.ts ', error);
@@ -144,26 +152,27 @@ export class MyStuffPage implements OnInit, OnDestroy {
     this.UtteranceService.markComplete(id);
 
     // the database is updated, now update the local array of utterances.
-    this.loadedUtterances.forEach(item => {
-      if(item.id === id) {
+    this.loadedUtterances.forEach((item) => {
+      if (item.id === id) {
         item.complete = true;
       }
-    })
+    });
     return;
   }
 
   onFilterUpdate(event: any) {
-    if (event!==0) {
-    if (event.detail.value === 'toggleChanged') {
-      // then the Completed Items toggle was changed
-      if (event.detail.checked) {
-        this.showCompletedStatus = true;
+    if (event !== 0) {
+      if (event.detail.value === 'toggleChanged') {
+        // then the Completed Items toggle was changed
+        if (event.detail.checked) {
+          this.showCompletedStatus = true;
+        } else {
+          this.showCompletedStatus = false;
+        }
       } else {
-        this.showCompletedStatus = false;
+        this.showDetailStatus = event.detail.value;
       }
-    } else {
-      this.showDetailStatus = event.detail.value;
-    }}
+    }
     try {
       if (this.showCompletedStatus === true) {
         // show all items
@@ -218,6 +227,64 @@ export class MyStuffPage implements OnInit, OnDestroy {
       return '';
     }
   }
+
+  reorder(event: CustomEvent<ItemReorderEventDetail>) {
+    console.log(this.findProjectForEvent(event.detail.to));
+    console.log(this.findItemIdForEvent(event.detail.from));
+    this.UtteranceService.updateProject(
+      this.findItemIdForEvent(event.detail.from),
+      this.findProjectForEvent(event.detail.to) );
+    event.detail.complete();
+  }
+
+  findProjectForEvent(location: number) {
+    // number is the position in a list of ion-items
+    // this list is segmented into subgroups and the subgroup headers are also elements in the list
+    // so we have to find into which subgroup the item has been dropped.
+    // displayData[][0] holds the project name
+    // displayData[][1] holds the individual elements in the project.
+
+    let i = 0;
+    let index = 0;
+    while (i < this.displayData.length) {
+      index += this.displayData[i][1].length + 1;
+      if (index > location) {
+        return this.displayData[i][0];
+      }
+      i++;
+    }
+
+    console.log('Something went wrong finding project for reordered item.');
+    return '';
+  }
+
+    findItemIdForEvent(location: number){
+    // number is the position in a list of ion-items
+    // this list is segmented into subgroups and the subgroup headers are also elements in the list
+    // so we have to find into which subgroup the item has been dropped.
+    // displayData[][0] holds the project name
+    // displayData[][1] holds the individual elements in the project.
+
+    let i = 0;
+    let index = 0;
+    let previousIndex = 0;
+    while (i < this.displayData.length) {
+      // find the right subgroup
+      index += this.displayData[i][1].length + 1;
+      if (index > location) {
+        // now I'm in the right subgroup
+        return this.displayData[i][1][location - previousIndex - 1].id;
+      }
+      // on the Successful loop in While, index will be greater than the position of
+      // the item we're looking for, so keep track of where we were
+      previousIndex = index;
+      i++;
+    }
+
+    console.log('Something went wrong finding ItemId for reordered item.');
+    return '';
+
+      }
 
   createBarChart() {
     this.bars = new Chart(this.barChart.nativeElement, {

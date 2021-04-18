@@ -139,6 +139,31 @@ export class UtteranceService {
       .subscribe(() => console.log('Updated Tag'));
   }
 
+  updateProject(uttId: string, newProject: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          console.log('utterance index: ', updatedUtteranceIndex);
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].project = newProject;
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { project: newProject, id: null}
+          );
+        }),
+        tap((result) => {
+          console.log(result);
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log('Updated Tag'));
+  }
+
   markComplete(uttId: string) {
     let updatedUtterances: Utterance[];
     return this.utterances

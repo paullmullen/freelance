@@ -42,7 +42,7 @@
         *ngIf="!isLoading && (!listedLoadedUtterances || listedLoadedUtterances.length <= 0)"
         class="ion-text-center"
       >
-        <p>No Utterances found!</p>
+        <p>No items found.</p>
       </ion-col>
       <ion-col
         size-md="6"
@@ -50,6 +50,7 @@
         *ngIf="!isLoading && listedLoadedUtterances && listedLoadedUtterances.length > 0"
       >
       <ion-list>
+        <ion-reorder-group disabled="false" (ionItemReorder)="reorder($event)">
         <ng-container *ngFor="let item of displayData">
           <ion-item *ngIf="!(item[0].trim()==='')">
             <h2 >{{item[0]}}</h2>
@@ -76,6 +77,7 @@
                 {{ item_sub?.utterance }}
                 <!-- <div *ngIf="item_sub?.project" style="display: inline; color: blue" ><strong>{{item_sub?.project}}</strong></div> -->
               </ion-label>
+              <ion-reorder slot="start"></ion-reorder>
             </ion-item>
             <ion-item-options>
               <ion-item-option
@@ -89,6 +91,7 @@
           </ion-item-options>
         </ion-item-sliding>
       </ng-container>
+      </ion-reorder-group>
       </ion-list>
     </ion-col>
     </ion-row>
