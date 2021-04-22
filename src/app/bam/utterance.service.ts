@@ -148,7 +148,6 @@ export class UtteranceService {
           const updatedUtteranceIndex = utts.findIndex(
             (utt) => utt.id === uttId
           );
-          console.log('utterance index: ', updatedUtteranceIndex);
           updatedUtterances = [...utts];
           updatedUtterances[updatedUtteranceIndex].project = newProject;
           return this.http.patch(

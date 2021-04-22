@@ -29,6 +29,8 @@ export class MyStuffPage implements OnInit, OnDestroy {
   totalUtterances: number;
   private usersUid: string;
   displayData: any;
+  private lastShowComplete: any;
+  private lastWhatToShow: any;
 
   private TagSub: Subscription;
   loadedTags: TagData[];
@@ -36,7 +38,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
   private bars: any;
   private colorArray: any;
   showDetailStatus = 'All';
-  private showCompletedStatus = false;
 
   constructor(
     private UtteranceService: UtteranceService,
@@ -160,45 +161,35 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return;
   }
 
-  onFilterUpdate(event: any) {
-    if (event !== 0) {
-      if (event.detail.value === 'toggleChanged') {
-        // then the Completed Items toggle was changed
-        if (event.detail.checked) {
-          this.showCompletedStatus = true;
-        } else {
-          this.showCompletedStatus = false;
-        }
-      } else {
-        this.showDetailStatus = event.detail.value;
-      }
-    }
+  onFilterUpdate(showComplete: any, whatToShow: any) {
+    this.lastShowComplete = showComplete;
+    this.lastWhatToShow = whatToShow;
     try {
-      if (this.showCompletedStatus === true) {
+      if (showComplete.checked) {
         // show all items
-        if (this.showDetailStatus === 'all') {
+        if (whatToShow.value === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) => utter.user === this.usersUid
-          );
-        } else if (this.showDetailStatus === 'tagged') {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.tag.length > 0 && utter.user === this.usersUid
-          );
-        } else {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.tag.length === 0 && utter.user === this.usersUid
-          );
-        }
-      } else {
-        // only show non-completed items
-        if (this.showDetailStatus === 'all') {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.user === this.usersUid && utter.complete === false
-          );
-        } else if (this.showDetailStatus === 'tagged') {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) =>
-              utter.tag.length > 0 &&
+            );
+          } else if (whatToShow.value === 'tagged') {
+            this.filteredUtterances = this.loadedUtterances.filter(
+              (utter) => utter.tag.length > 0 && utter.user === this.usersUid
+              );
+            } else {
+              this.filteredUtterances = this.loadedUtterances.filter(
+                (utter) => utter.tag.length === 0 && utter.user === this.usersUid
+                );
+              }
+            } else {
+              // only show non-completed items
+              if (whatToShow.value === 'all') {
+                this.filteredUtterances = this.loadedUtterances.filter(
+                  (utter) => utter.user === this.usersUid && utter.complete === false
+                  );
+                } else if (whatToShow.value === 'tagged') {
+                  this.filteredUtterances = this.loadedUtterances.filter(
+                    (utter) =>
+                    utter.tag.length > 0 &&
               utter.user === this.usersUid &&
               utter.complete === false
           );
@@ -214,6 +205,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
       this.listedLoadedUtterances = this.filteredUtterances;
       const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
       this.displayData = Object.entries(getData);
+      console.log(this.displayData);
     } catch (error) {
       console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }
@@ -229,11 +221,14 @@ export class MyStuffPage implements OnInit, OnDestroy {
   }
 
   reorder(event: CustomEvent<ItemReorderEventDetail>) {
-    console.log(this.findProjectForEvent(event.detail.to));
-    console.log(this.findItemIdForEvent(event.detail.from));
     this.UtteranceService.updateProject(
       this.findItemIdForEvent(event.detail.from),
-      this.findProjectForEvent(event.detail.to) );
+      this.findProjectForEvent(event.detail.to)
+    );
+    this.onFilterUpdate(this.lastShowComplete, this.lastWhatToShow);
+    this.sortItems('project', 'asc');
+    this.sortItems('importance', 'dec');
+    this.sortItems('urgency', 'dec');
     event.detail.complete();
   }
 
@@ -258,7 +253,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return '';
   }
 
-    findItemIdForEvent(location: number){
+  findItemIdForEvent(location: number) {
     // number is the position in a list of ion-items
     // this list is segmented into subgroups and the subgroup headers are also elements in the list
     // so we have to find into which subgroup the item has been dropped.
@@ -283,8 +278,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
     console.log('Something went wrong finding ItemId for reordered item.');
     return '';
-
-      }
+  }
 
   createBarChart() {
     this.bars = new Chart(this.barChart.nativeElement, {

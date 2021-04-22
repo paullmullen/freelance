@@ -47,6 +47,10 @@ const routes: Routes = [
   {
     path: 'bam',
     loadChildren: () => import('./bam/bam.module').then( m => m.BamPageModule)
+  },
+  {
+    path: 'financials',
+    loadChildren: () => import('./financials/financials.module').then( m => m.FinancialsPageModule)
   }
 ];
 

@@ -1,4 +1,6 @@
 <ion-header>
+    <form>
+
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -6,26 +8,30 @@
     <ion-title>My Stuff</ion-title>
     <ion-buttons slot="end">
       <ion-label>Done</ion-label>
-      <ion-toggle name="showCompletedItems"
-                  (ionChange)="onFilterUpdate($event)"
+      <ion-toggle #showCompletedItems
+                  (ionChange)="onFilterUpdate(showCompletedItems, whatToShowChoice)"
                   value="toggleChanged"
-                  checked>
+                  unchecked>
       </ion-toggle>
     </ion-buttons>
   </ion-toolbar>
+</form>
+
 </ion-header>
 
 <ion-content class="ion-padding">
   <ion-grid>
-    <ion-row>
-      <ion-col size-md="6" offset-md="3">
-        <ion-segment (ionChange)="onFilterUpdate($event)" value="all">
-          <ion-segment-button value="all">All </ion-segment-button>
-          <ion-segment-button value="tagged">Tagged </ion-segment-button>
-          <ion-segment-button value="untagged">Un-Tagged </ion-segment-button>
-        </ion-segment>
-      </ion-col>
-    </ion-row>
+    <form tagging="ngForm">
+      <ion-row>
+        <ion-col size-md="6" offset-md="3">
+          <ion-segment (ionChange)="onFilterUpdate(showCompletedItems, whatToShowChoice)" value="all" #whatToShowChoice>
+            <ion-segment-button value="all">All </ion-segment-button>
+            <ion-segment-button value="tagged">Tagged </ion-segment-button>
+            <ion-segment-button value="untagged">Not Tagged </ion-segment-button>
+          </ion-segment>
+        </ion-col>
+      </ion-row>
+  </form>
 
     <ion-row>
       <ion-col
@@ -36,6 +42,8 @@
       >
         <ion-spinner color="primary"></ion-spinner>
       </ion-col>
+      </ion-row>
+      <ion-row>
       <ion-col
         size-md="6"
         offset-md="3"
@@ -44,10 +52,12 @@
       >
         <p>No items found.</p>
       </ion-col>
+      </ion-row>
+      <ion-row>
       <ion-col
-        size-md="6"
-        offset-md="3"
-        *ngIf="!isLoading && listedLoadedUtterances && listedLoadedUtterances.length > 0"
+      size-md="6"
+      offset-md="3"
+      *ngIf="!isLoading && listedLoadedUtterances && listedLoadedUtterances.length > 0"
       >
       <ion-list>
         <ion-reorder-group disabled="false" (ionItemReorder)="reorder($event)">
@@ -60,26 +70,24 @@
           </ion-item>
 
 
-
           <ion-item-sliding *ngFor="let item_sub of item[1]"
             #slidingUtterance
           >
-            <ion-item>
-              <ion-icon
-                *ngIf="(item_sub?.tag.length>0) && (showDetailStatus==='tagged')"
-                slot="start"
-                icon="{{ getIconForTag(item_sub?.tag) }}"
-                color="primary"
-              ></ion-icon>
-              <ion-label class="ion-text-wrap" color="dark" [style.text-decoration]="item_sub.complete ? 'line-through' : 'none'">
-                <div *ngIf="item_sub?.urgency" style="display: inline; color: red"><strong>Urgent </strong><br></div>
-                <div *ngIf="item_sub?.importance" style="display: inline; color: red" ><strong>Important </strong><br></div>
-                {{ item_sub?.utterance }}
-                <!-- <div *ngIf="item_sub?.project" style="display: inline; color: blue" ><strong>{{item_sub?.project}}</strong></div> -->
-              </ion-label>
-              <ion-reorder slot="start"></ion-reorder>
-            </ion-item>
-            <ion-item-options>
+          <ion-item>
+            <ion-icon
+            *ngIf="(item_sub?.tag.length>0) && (showDetailStatus==='tagged')"
+            slot="start"
+            icon="{{ getIconForTag(item_sub?.tag) }}"
+            color="primary"
+            ></ion-icon>
+            <ion-icon *ngIf="((showDetailStatus==='all') || (showDetailStatus==='All')) && (item_sub?.urgency || item_sub?.importance)" name="ellipse" [color]="item_sub?.urgency ? 'danger' : (item_sub?.importance ? 'primary' : 'secondary')" slot="end"></ion-icon>
+            <ion-label class="ion-text-wrap" color="dark" [style.text-decoration]="item_sub.complete ? 'line-through' : 'none'">
+              {{ item_sub?.utterance }}
+            </ion-label>
+            <ion-reorder slot="start">
+          </ion-reorder>
+          </ion-item>
+        <ion-item-options>
               <ion-item-option
               (click)="onTagUtterance(item_sub.id, item_sub.tag, item_sub.utterance, slidingUtterance)"
               >
@@ -87,6 +95,9 @@
             </ion-item-option>
             <ion-item-option color="secondary" (click)="onMarkComplete(item_sub.id, slidingUtterance)">
               <ion-icon name="checkbox-outline" slot="icon-only"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="success" (click)="onMarkComplete(item_sub.id, slidingUtterance)">
+              <ion-icon name="logo-usd" slot="icon-only"></ion-icon>
             </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
@@ -98,3 +109,4 @@
   </ion-grid>
 </ion-content>
 <ion-footer> <canvas #barChart height="50"></canvas></ion-footer>
+
