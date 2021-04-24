@@ -1,5 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Component, OnInit } from '@angular/core';
+import { Chart, ChartDataSets, ChartType, ChartOptions } from 'chart.js';
+import { Color, Label, ChartsModule } from 'ng2-charts';
+
+
 
 @Component({
   selector: 'app-financials',
@@ -9,86 +12,48 @@ import { Chart } from 'chart.js';
 export class FinancialsPage implements OnInit {
   constructor() {}
 
-  @ViewChild('barChart') barChart;
-  private bars: any;
 
-  ngOnInit() {
-  }
-
-  ionViewWillEnter() {
-    this.createBarChart();
-  }
-
-  createBarChart() {
-    this.bars = new Chart(this.barChart.nativeElement, {
-      type: 'bar',
-      data: {
-        datasets: [
-          {
-            data: [300],
-            backgroundColor: 'rgb(0,150,255)', // array should have same number of elements as number of dataset
-            barThickness: 10,
-          },
-          {
-            data: [1000],
-            backgroundColor: 'rgb(0,0,255)', // array should have same number of elements as number of dataset
-            barThickness: 10,
-          },
-          {
-            data: [800],
-            backgroundColor: 'rgb(0,200,0)', // array should have same number of elements as number of dataset
-            barThickness: 10,
-          },
-        ],
-      },
-      options: {
-        legend: {
+  barChartOptions: (ChartOptions) = {
+    responsive: true,
+    scales: {
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+        },
+        gridLines: {
           display: false,
         },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-              stacked: true,
-
-              ticks: {
-                suggestedMax: 500,
-                display: true,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              gridLines: {
-                display: true,
-              },
-              stacked: true,
-            },
-          ],
+      }],
+      xAxes: [{
+        id: 'x0',
+        ticks: {
+          beginAtZero: true,
+          max: 3000,
         },
-        // plugins: [
-        //   {
-        //     annotation: {
-        //       annotations: [
-        //         {
-        //           type: 'line',
-        //           mode: 'vertical',
-        //           scaleID: 'x-axis-0',
-        //           value: 2000,
-        //           borderColor: 'rgb(75, 192, 192)',
-        //           borderWidth: 4,
-        //           label: {
-        //             enabled: true,
-        //             content: '2000',
-        //           },
-        //         },
-        //       ],
-        //     },
-        //   },
-        // ],
-      },
-    });
-  }
+        gridLines: {
+          display: false,
+        },
+      }],
+    },
+
+  };
+  barChartLabels: Label[] = [''];
+  barChartType: ChartType = 'horizontalBar';
+  barChartPlugins = [];
+  barChartLegend = false;
+  barChartData: ChartDataSets[] = [
+    { data: [2450], stack: '2', label: 'Goal', backgroundColor: 'rgb(190,190,190)', barThickness: 10 },
+    { data: [450], stack: '1', label: 'Forecast', backgroundColor: 'rgb(0,0,200)', barThickness: 50 },
+    { data: [750], stack: '1', label: 'Invoiced', backgroundColor: 'rgb(0,175,250)', barThickness: 50  },
+    { data: [250], stack: '1', label: 'Received', backgroundColor: 'rgb(0,255,100)', barThickness: 50 },
+  ];
+
+
+
+
+  ngOnInit() {}
+
+  ionViewWillEnter() {}
+
 }

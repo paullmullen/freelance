@@ -1,5 +1,4 @@
 <ion-header>
-
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -8,14 +7,23 @@
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content>
+  <div class="chart-wrapper">
+    <canvas
+      baseChart
+      [datasets]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [plugins]="barChartPlugins"
+      [legend]="barChartLegend"
+      [chartType]="barChartType"
+      height="75"
+    >
+    </canvas>
+  </div>
   <ion-grid>
     <ion-row>
-      <ion-col size="10" offset="1">
-
-        <canvas #barChart height="50"></canvas>
-      </ion-col>
+      <ion-col size="10" offset="1"> text here </ion-col>
     </ion-row>
-      </ion-grid>
+  </ion-grid>
 </ion-content>
