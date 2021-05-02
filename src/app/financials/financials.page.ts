@@ -7,6 +7,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ItemReorderEventDetail } from '@ionic/core';
 import { UtteranceService } from './../bam/utterance.service';
 import { Utterance } from './../bam/utterance.model';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-financials',
@@ -28,11 +29,18 @@ export class FinancialsPage implements OnInit, OnDestroy {
   listedLoadedUtterances: Utterance[];
   displayData: any;
   private usersUid: string;
-  barChartData: ChartDataSets[];
+
   showDetailStatus = 'All';
   invoicedAmount = 0;
   forecastAmount = 0;
   receivedAmount = 0;
+
+
+  public barChartPlugins = [ChartDataLabels];
+  barChartData: ChartDataSets[];
+  barChartLabels: Label[] = [''];
+  barChartType: ChartType = 'horizontalBar';
+  barChartLegend = false;
 
 
   barChartOptions: ChartOptions = {
@@ -61,11 +69,16 @@ export class FinancialsPage implements OnInit, OnDestroy {
         },
       ],
     },
+    plugins: {
+      datalabels: {
+        anchor: 'center',
+        align: 'center',
+      font: {
+          size: 10,
+        }
+      }
+    }
   };
-  barChartLabels: Label[] = [''];
-  barChartType: ChartType = 'horizontalBar';
-  barChartPlugins = [];
-  barChartLegend = false;
 
   ngOnInit() {
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
