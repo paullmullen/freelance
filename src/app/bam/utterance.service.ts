@@ -14,6 +14,8 @@ interface UtteranceData {
   urgency: string;
   importance: string;
   project: string;
+  isFinancials: boolean;
+  amount: number;
 }
 
 @Injectable({
@@ -63,7 +65,9 @@ export class UtteranceService {
                   utterancesData[key].complete,
                   utterancesData[key].urgency,
                   utterancesData[key].importance,
-                  utterancesData[key].project
+                  utterancesData[key].project,
+                  utterancesData[key].isFinancials,
+                  utterancesData[key].amount
                 )
               );
               this._utteranceCount++;
@@ -79,18 +83,20 @@ export class UtteranceService {
 
   // --------------------- additional utterance services---------------------
 
-  addUtterance(utteranceString: string,
-               utteranceTag: string,
-               user: string,
-               urgency: string,
-               importance: string,
-               project: string) {
+  addUtterance(
+    utteranceString: string,
+    utteranceTag: string,
+    user: string,
+    urgency: string,
+    importance: string,
+    project: string
+  ) {
     const newUtterance = new Utterance(
       Math.random().toString(),
       utteranceString,
       utteranceTag,
       user,
-      false,   // initially new things are not complete
+      false, // initially new things are not complete
       urgency,
       importance,
       project
@@ -152,7 +158,30 @@ export class UtteranceService {
           updatedUtterances[updatedUtteranceIndex].project = newProject;
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { project: newProject, id: null}
+            { project: newProject, id: null }
+          );
+        }),
+        tap((result) => {
+          console.log(result);
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log('Updated Project'));
+  }
+  updateAmount(uttId: string, newAmount: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].amount = Number(newAmount);
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { amount: newAmount, id: null }
           );
         }),
         tap((result) => {
@@ -179,5 +208,23 @@ export class UtteranceService {
         })
       )
       .subscribe(() => console.log(uttId, ' marked complete'));
+  }
+
+  moveToFinancials(uttId: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { isFinancials: true, id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log(uttId, ' marked financials'));
   }
 }

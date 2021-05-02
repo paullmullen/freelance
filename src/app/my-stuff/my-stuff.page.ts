@@ -1,9 +1,5 @@
 import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
-import {
-  IonItemSliding,
-  ModalController,
-  IonReorderGroup,
-} from '@ionic/angular';
+import { IonItemSliding,  ModalController,  IonReorderGroup,} from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
@@ -60,7 +56,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
             this.sortItems('importance', 'dec');
             this.sortItems('urgency', 'dec');
             this.listedLoadedUtterances = this.loadedUtterances.filter(
-              (utter) => utter.user === this.usersUid
+              (utter) => (utter.user === this.usersUid) && (utter.complete === false)
             );
           }
           const getData = this.groupMethod(
@@ -161,6 +157,20 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return;
   }
 
+  async onMoveToFinancials(id: string, slidingEl: IonItemSliding) {
+    slidingEl.close();
+    this.UtteranceService.moveToFinancials(id);
+    this.UtteranceService.updateProject(id,'Forecast');
+
+
+    // the database is updated, now update the local array of utterances.
+    this.loadedUtterances.forEach((item) => {
+      if (item.id === id) {
+      }
+    });
+    return;
+  }
+
   onFilterUpdate(showComplete: any, whatToShow: any) {
     this.lastShowComplete = showComplete;
     this.lastWhatToShow = whatToShow;
@@ -169,7 +179,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
         // show all items
         if (whatToShow.value === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.user === this.usersUid
+            (utter) => utter.user === this.usersUid && !utter.isFinancials
             );
           } else if (whatToShow.value === 'tagged') {
             this.filteredUtterances = this.loadedUtterances.filter(

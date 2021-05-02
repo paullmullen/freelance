@@ -7,6 +7,8 @@ export class Utterance {
     public complete?: boolean,
     public urgency?: string,
     public importance?: string,
-    public project?: string
+    public project?: string,
+    public isFinancials?: boolean,
+    public amount?: number
   ) {}
 }

@@ -19,6 +19,9 @@ import { RouteReuseStrategy } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { ChartsModule } from 'ng2-charts';
+import { CurrencyMaskModule } from 'ng2-currency-mask';
+import { DecimalPipe } from '@angular/common';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -43,6 +46,7 @@ import { ChartsModule } from 'ng2-charts';
   ],
   providers: [
     SpeechRecognition,
+    DecimalPipe,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

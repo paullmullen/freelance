@@ -1,0 +1,38 @@
+
+<!-- <script src="angular-input-masks-standalone.min.js"></script> -->
+
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Set amount</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #f="ngForm"  (ngSubmit)="closeModal(f)">
+  <ion-grid>
+
+    <ion-row>
+      <ion-col text-center>
+        <ion-item lines="full">
+
+        <ion-label position="floating">Invoice amount for this item</ion-label>
+        <ion-input
+          type="number"
+          name="amount"
+          id="amount"
+          ng-pattern="reg = /^[0-9]{1,2}$/;"
+          required
+          ngModel
+         ></ion-input>
+         </ion-item>
+</ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col text-center>
+        <ion-button submit (click)="closeModal(f)">Save</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</form>
+</ion-content>

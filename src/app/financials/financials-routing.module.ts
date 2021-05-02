@@ -7,7 +7,11 @@ const routes: Routes = [
   {
     path: '',
     component: FinancialsPage
+  },  {
+    path: 'how-much',
+    loadChildren: () => import('./how-much/how-much.module').then( m => m.HowMuchPageModule)
   }
+
 ];
 
 @NgModule({
