@@ -48,11 +48,7 @@ export class FinancialsPage implements OnInit, OnDestroy {
     scales: {
       yAxes: [
         {
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-          },
-          gridLines: {
+           gridLines: {
             display: false,
           },
         },
@@ -72,8 +68,10 @@ export class FinancialsPage implements OnInit, OnDestroy {
     plugins: {
       datalabels: {
         anchor: 'center',
-        align: 'center',
-      font: {
+        align: 'start',
+        color: 'white',
+        padding: 5,
+        font: {
           size: 10,
         }
       }
@@ -212,28 +210,24 @@ export class FinancialsPage implements OnInit, OnDestroy {
       {
         data: [2400],
         stack: '2',
-        label: 'Goal',
         backgroundColor: 'rgb(190,190,190)',
         barThickness: 10,
       },
       {
         data: [this.forecastAmount],
         stack: '1',
-        label: 'Forecast',
         backgroundColor: 'rgb(0,0,200)',
         barThickness: 50,
       },
       {
         data: [this.invoicedAmount],
         stack: '1',
-        label: 'Invoiced',
         backgroundColor: 'rgb(0,175,250)',
         barThickness: 50,
       },
       {
         data: [this.receivedAmount],
         stack: '1',
-        label: 'Received',
         backgroundColor: 'rgb(0,200,100)',
         barThickness: 50,
       },
