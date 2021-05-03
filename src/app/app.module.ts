@@ -1,3 +1,4 @@
+import { FinancialsPageModule } from './financials/financials.module';
 import { FolderPageModule } from './folder/folder.module';
 import { TagUtterancesPageModule } from './my-stuff/tag-utterances/tag-utterances.module';
 import { environment } from './../environments/environment';
@@ -42,6 +43,7 @@ import { DecimalPipe } from '@angular/common';
     TagUtterancesPageModule,
     FolderPageModule,
     ChartsModule,
+    FinancialsPageModule,
 
   ],
   providers: [

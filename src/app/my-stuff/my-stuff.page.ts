@@ -56,7 +56,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
             this.sortItems('importance', 'dec');
             this.sortItems('urgency', 'dec');
             this.listedLoadedUtterances = this.loadedUtterances.filter(
-              (utter) => (utter.user === this.usersUid) && (utter.complete === false)
+              (utter) => (utter.user === this.usersUid) && (utter.complete === false) && (!utter.isFinancials === true)
             );
           }
           const getData = this.groupMethod(
@@ -179,7 +179,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
         // show all items
         if (whatToShow.value === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.user === this.usersUid && !utter.isFinancials
+            (utter) => utter.user === this.usersUid && !utter.isFinancials === true
             );
           } else if (whatToShow.value === 'tagged') {
             this.filteredUtterances = this.loadedUtterances.filter(
@@ -194,8 +194,9 @@ export class MyStuffPage implements OnInit, OnDestroy {
               // only show non-completed items
               if (whatToShow.value === 'all') {
                 this.filteredUtterances = this.loadedUtterances.filter(
-                  (utter) => utter.user === this.usersUid && utter.complete === false
+                  (utter) => utter.user === this.usersUid && utter.complete === false  && !utter.isFinancials === true
                   );
+                  console.log(this.filteredUtterances);
                 } else if (whatToShow.value === 'tagged') {
                   this.filteredUtterances = this.loadedUtterances.filter(
                     (utter) =>
@@ -230,7 +231,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
     }
   }
 
-  reorder(event: CustomEvent<ItemReorderEventDetail>) {
+  reorder(event) {
     this.UtteranceService.updateProject(
       this.findItemIdForEvent(event.detail.from),
       this.findProjectForEvent(event.detail.to)

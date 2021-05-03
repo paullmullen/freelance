@@ -252,7 +252,7 @@ export class FinancialsPage implements OnInit, OnDestroy {
     }
   }
 
-  reorder(event: CustomEvent<ItemReorderEventDetail>) {
+  reorder(event) {
     this.UtteranceService.updateProject(
       this.findItemIdForEvent(event.detail.from),
       this.findProjectForEvent(event.detail.to)
