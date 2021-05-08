@@ -1,7 +1,11 @@
 import { HowMuchPage } from './how-much/how-much.page';
 import { Chart, ChartDataSets, ChartType, ChartOptions } from 'chart.js';
-import { Color, Label, ChartsModule } from 'ng2-charts';
-import { IonItemSliding, IonReorderGroup, ModalController } from '@ionic/angular';
+import { Color, Label, ChartsModule, BaseChartDirective } from 'ng2-charts';
+import {
+  IonItemSliding,
+  IonReorderGroup,
+  ModalController,
+} from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ItemReorderEventDetail } from '@ionic/core';
@@ -15,11 +19,12 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
   styleUrls: ['./financials.page.scss'],
 })
 export class FinancialsPage implements OnInit, OnDestroy {
-  constructor(private UtteranceService: UtteranceService,
-              public modalController: ModalController
-              ) {}
+  constructor(
+    private UtteranceService: UtteranceService,
+    public modalController: ModalController
+  ) {}
 
-  @ViewChild('barChart') barChart;
+  @ViewChild(BaseChartDirective) barChart: BaseChartDirective;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   isLoading = false;
@@ -35,27 +40,24 @@ export class FinancialsPage implements OnInit, OnDestroy {
   forecastAmount = 0;
   receivedAmount = 0;
 
-
   public barChartPlugins = [ChartDataLabels];
   barChartData: ChartDataSets[];
   barChartLabels: Label[] = [''];
   barChartType: ChartType = 'horizontalBar';
   barChartLegend = false;
 
-
   barChartOptions: ChartOptions = {
     responsive: true,
     scales: {
       yAxes: [
         {
-           gridLines: {
+          gridLines: {
             display: false,
           },
         },
       ],
       xAxes: [
         {
-          id: 'x0',
           ticks: {
             beginAtZero: true,
           },
@@ -67,19 +69,27 @@ export class FinancialsPage implements OnInit, OnDestroy {
     },
     plugins: {
       datalabels: {
+        display: true,
         anchor: 'center',
         align: 'start',
         color: 'white',
         padding: 5,
         font: {
           size: 10,
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   ngOnInit() {
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
+    try {
+      if (!JSON.parse(localStorage.getItem('monthlyGoal'))) {
+        localStorage.setItem('monthlyGoal', '1000');
+      }
+    } catch {
+      localStorage.setItem('monthlyGoal', '1000');
+    }
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
       (Utterances) => {
         try {
@@ -108,7 +118,6 @@ export class FinancialsPage implements OnInit, OnDestroy {
           let addReceived = true;
 
           for (let index = 0; index < this.displayData.length; index++) {
-
             if (this.displayData[index][0].indexOf('Invoiced') > -1) {
               addInvoiced = false;
             }
@@ -153,7 +162,8 @@ export class FinancialsPage implements OnInit, OnDestroy {
                   utterance: null,
                 },
               ],
-            ]);}
+            ]);
+          }
           if (addReceived) {
             this.displayData.push([
               'Received',
@@ -201,14 +211,20 @@ export class FinancialsPage implements OnInit, OnDestroy {
         return b[prop] > a[prop] ? 1 : b[prop] < a[prop] ? -1 : 0;
       }
     });
-    this.loadedUtterances.forEach(item => {
-      if (item.project === 'Invoiced') { this.invoicedAmount += item.amount; }
-      if (item.project === 'Forecast') { this.forecastAmount += item.amount; }
-      if (item.project === 'Received') { this.receivedAmount += item.amount; }
+    this.loadedUtterances.forEach((item) => {
+      if (item.project === 'Invoiced') {
+        this.invoicedAmount += item.amount;
+      }
+      if (item.project === 'Forecast') {
+        this.forecastAmount += item.amount;
+      }
+      if (item.project === 'Received') {
+        this.receivedAmount += item.amount;
+      }
     });
     this.barChartData = [
       {
-        data: [2400],
+        data: [JSON.parse(localStorage.getItem('monthlyGoal'))],
         stack: '2',
         backgroundColor: 'rgb(190,190,190)',
         barThickness: 10,
@@ -232,7 +248,6 @@ export class FinancialsPage implements OnInit, OnDestroy {
         barThickness: 50,
       },
     ];
-
   }
 
   ionViewWillEnter() {
@@ -241,8 +256,6 @@ export class FinancialsPage implements OnInit, OnDestroy {
       this.isLoading = false;
     });
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
-
-
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -310,6 +323,10 @@ export class FinancialsPage implements OnInit, OnDestroy {
     return '';
   }
 
+  onClickChart() {
+    this.openModal('updateGoal');
+  }
+
   onEditItem(id: string) {
     this.openModal(id);
   }
@@ -318,7 +335,7 @@ export class FinancialsPage implements OnInit, OnDestroy {
     const modal = await this.modalController.create({
       component: HowMuchPage,
       componentProps: {
-        "utteranceId": id
+        utteranceId: id,
       },
       cssClass: 'small-modal-css',
     });
@@ -326,11 +343,37 @@ export class FinancialsPage implements OnInit, OnDestroy {
     modal.onDidDismiss().then((dataReturned) => {
       if (dataReturned !== null) {
         dataReturned = dataReturned.data;
+        this.barChartData = [
+          {
+            data: [JSON.parse(localStorage.getItem('monthlyGoal'))],
+            stack: '2',
+            backgroundColor: 'rgb(190,190,190)',
+            barThickness: 10,
+          },
+          {
+            data: [this.forecastAmount],
+            stack: '1',
+            backgroundColor: 'rgb(0,0,200)',
+            barThickness: 50,
+          },
+          {
+            data: [this.invoicedAmount],
+            stack: '1',
+            backgroundColor: 'rgb(0,175,250)',
+            barThickness: 50,
+          },
+          {
+            data: [this.receivedAmount],
+            stack: '1',
+            backgroundColor: 'rgb(0,200,100)',
+            barThickness: 50,
+          },
+        ];
+
         //alert('Modal Sent Data :'+ dataReturned);
       }
     });
 
     return await modal.present();
   }
-
 }
