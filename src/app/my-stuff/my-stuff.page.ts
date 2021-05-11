@@ -2,8 +2,6 @@ import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
 import { IonItemSliding,  ModalController,  IonReorderGroup,} from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Chart } from 'chart.js';
-import { ItemReorderEventDetail } from '@ionic/core';
 
 import { UtteranceService } from './../bam/utterance.service';
 import { Utterance } from './../bam/utterance.model';
@@ -41,7 +39,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
     private modalController: ModalController
   ) {}
 
-  @ViewChild('barChart') barChart;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
   ngOnInit() {
@@ -108,7 +105,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   ionViewDidEnter() {
     this.totalUtterances = this.loadedUtterances.length;
-    this.createBarChart();
   }
 
   ngOnDestroy() {
@@ -160,7 +156,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
   async onMoveToFinancials(id: string, slidingEl: IonItemSliding) {
     slidingEl.close();
     this.UtteranceService.moveToFinancials(id);
-    this.UtteranceService.updateProject(id,'Forecast');
+    this.UtteranceService.updateProject(id, 'Forecast');
 
 
     // the database is updated, now update the local array of utterances.
@@ -196,7 +192,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
                 this.filteredUtterances = this.loadedUtterances.filter(
                   (utter) => utter.user === this.usersUid && utter.complete === false  && !utter.isFinancials === true
                   );
-                  console.log(this.filteredUtterances);
                 } else if (whatToShow.value === 'tagged') {
                   this.filteredUtterances = this.loadedUtterances.filter(
                     (utter) =>
@@ -216,7 +211,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
       this.listedLoadedUtterances = this.filteredUtterances;
       const getData = this.groupMethod(this.listedLoadedUtterances, 'project');
       this.displayData = Object.entries(getData);
-      console.log(this.displayData);
     } catch (error) {
       console.log('Error in onFilterUpdate in my-stuffpage.ts', error);
     }
@@ -289,53 +283,5 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
     console.log('Something went wrong finding ItemId for reordered item.');
     return '';
-  }
-
-  createBarChart() {
-    this.bars = new Chart(this.barChart.nativeElement, {
-      type: 'horizontalBar',
-      data: {
-        datasets: [
-          {
-            data: [this.totalUtterances],
-            backgroundColor: 'rgb(56, 128, 256)', // array should have same number of elements as number of dataset
-            barThickness: 10,
-          },
-          // {
-          // data: [100],
-          // backgroundColor: 'rgb(150,200,255)', // array should have same number of elements as number of dataset
-          // barThickness: 10
-          // }
-        ],
-      },
-      options: {
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-              stacked: true,
-
-              ticks: {
-                suggestedMax: 500,
-                display: false,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-              stacked: true,
-            },
-          ],
-        },
-      },
-    });
   }
 }

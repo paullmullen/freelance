@@ -162,7 +162,6 @@ export class UtteranceService {
           );
         }),
         tap((result) => {
-          console.log(result);
           this._utterances.next(updatedUtterances);
         })
       )
@@ -185,7 +184,6 @@ export class UtteranceService {
           );
         }),
         tap((result) => {
-          console.log(result);
           this._utterances.next(updatedUtterances);
         })
       )
