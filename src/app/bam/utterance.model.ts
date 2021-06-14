@@ -9,6 +9,8 @@ export class Utterance {
     public importance?: string,
     public project?: string,
     public isFinancials?: boolean,
-    public amount?: number
+    public amount?: number,
+    public archived?: string,
+    public received?: string
   ) {}
 }

@@ -3,7 +3,7 @@ import { Utterance } from './utterance.model';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, of } from 'rxjs';
-import { tap, map, take, switchMap } from 'rxjs/operators';
+import { tap, map, take, switchMap, mergeMap } from 'rxjs/operators';
 
 interface UtteranceData {
   id: string;
@@ -16,6 +16,8 @@ interface UtteranceData {
   project: string;
   isFinancials: boolean;
   amount: number;
+  archived: string;
+  received: string;
 }
 
 @Injectable({
@@ -67,7 +69,9 @@ export class UtteranceService {
                   utterancesData[key].importance,
                   utterancesData[key].project,
                   utterancesData[key].isFinancials,
-                  utterancesData[key].amount
+                  utterancesData[key].amount,
+                  utterancesData[key].archived,
+                  utterancesData[key].received
                 )
               );
               this._utteranceCount++;
@@ -156,9 +160,21 @@ export class UtteranceService {
           );
           updatedUtterances = [...utts];
           updatedUtterances[updatedUtteranceIndex].project = newProject;
+
+          // if the item is moved into the received project, mark it as received, otherwise set received to null
+          if (newProject === 'Received') {
+            updatedUtterances[updatedUtteranceIndex].received = Date();
+          } else {
+            updatedUtterances[updatedUtteranceIndex].received = null;
+          }
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { project: newProject, id: null }
+            {
+              project: newProject,
+              id: null,
+              received: updatedUtterances[updatedUtteranceIndex].received,
+            }
           );
         }),
         tap((result) => {
@@ -224,5 +240,23 @@ export class UtteranceService {
         })
       )
       .subscribe(() => console.log(uttId, ' marked financials'));
+  }
+
+  archive (uttId: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { archived: Date(), id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log(uttId, ' archived'));
   }
 }

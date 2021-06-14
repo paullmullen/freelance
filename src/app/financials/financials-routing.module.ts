@@ -10,6 +10,10 @@ const routes: Routes = [
   },  {
     path: 'how-much',
     loadChildren: () => import('./how-much/how-much.module').then( m => m.HowMuchPageModule)
+  },
+  {
+    path: 'new-month',
+    loadChildren: () => import('./new-month/new-month.module').then( m => m.NewMonthPageModule)
   }
 
 ];

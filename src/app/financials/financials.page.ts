@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { NewMonthPage } from './new-month/new-month.page';
 import { HowMuchPage } from './how-much/how-much.page';
 import { Chart, ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 import { Color, Label, ChartsModule, BaseChartDirective } from 'ng2-charts';
@@ -21,7 +23,8 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 export class FinancialsPage implements OnInit, OnDestroy {
   constructor(
     private UtteranceService: UtteranceService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private router: Router
   ) {}
 
   @ViewChild(BaseChartDirective) barChart: BaseChartDirective;
@@ -34,6 +37,10 @@ export class FinancialsPage implements OnInit, OnDestroy {
   listedLoadedUtterances: Utterance[];
   displayData: any;
   private usersUid: string;
+  private today: Date;
+  private thisMonth: number;
+  private thisYear: number;
+  private offerToArchive: boolean;
 
   showDetailStatus = 'All';
   invoicedAmount = 0;
@@ -82,6 +89,16 @@ export class FinancialsPage implements OnInit, OnDestroy {
   };
 
   ngOnInit() {
+    this.today = new Date();
+    this.thisMonth = 6; // this.today.getMonth();
+    this.thisYear = this.today.getFullYear();
+    this.offerToArchive = false;
+
+    // since this module could open multiple modals, start by assuming that none are open.
+    // the localStorage 'modalOpen' is set when a modal opens inside the modals.
+    localStorage.removeItem('modalOpen');
+
+
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
     try {
       if (!JSON.parse(localStorage.getItem('monthlyGoal'))) {
@@ -105,13 +122,44 @@ export class FinancialsPage implements OnInit, OnDestroy {
                 utter.user === this.usersUid &&
                 (utter.project === 'Forecast' ||
                   utter.project === 'Invoiced' ||
-                  utter.project === 'Received')
+                  utter.project === 'Received') &&
+                  !utter.archived
             );
           }
+
+          // group the items by project prior to display
           const getData = this.groupMethod(
             this.listedLoadedUtterances,
             'project'
           );
+          // now check to see if any of the items should be archived.
+          // algorithm is to find the received date, check to see if it was last month or
+          // before.  If there is such an item, then in ion-view-did-enter, we will put up
+          // a modal to see if they want to archive the older data.
+
+          if (!localStorage.getItem('modalOpen')) {  // there is a chance this modal is already open.  Only do it if it's not already open
+          for (const item of this.listedLoadedUtterances) {
+            if (item.received && !item.archived) {
+              if (
+                (this.thisYear === new Date(item.received).getFullYear() &&
+                  this.thisMonth > new Date(item.received).getMonth() + 1) ||
+                this.thisYear > new Date(item.received).getFullYear() // takes care of Jan < Dec
+              ) {
+                // If you get here, then the item was received before the start of the current month.
+                this.offerToArchive = true;
+              }
+            }
+          }
+
+          // been through the whole list... so now if we found any to archive, we do it now.
+          if (this.offerToArchive === true) {
+            this.archiveReceipts();
+          }
+
+        }
+
+          // iterate through the entries, add a project title for each group (invoiced, received,
+          // forecast) if there is at least one entry of that type in the list of entries.
           this.displayData = Object.entries(getData);
           let addInvoiced = true;
           let addForecast = true;
@@ -211,17 +259,21 @@ export class FinancialsPage implements OnInit, OnDestroy {
         return b[prop] > a[prop] ? 1 : b[prop] < a[prop] ? -1 : 0;
       }
     });
+
+    // recalculate the amount of each category for the graph
     this.loadedUtterances.forEach((item) => {
-      if (item.project === 'Invoiced') {
+      if (item.project === 'Invoiced' && !item.archived) {
         this.invoicedAmount += item.amount;
       }
-      if (item.project === 'Forecast') {
+      if (item.project === 'Forecast' && !item.archived) {
         this.forecastAmount += item.amount;
       }
-      if (item.project === 'Received') {
+      if (item.project === 'Received' && !item.archived) {
         this.receivedAmount += item.amount;
       }
     });
+
+    // draw the chart
     this.barChartData = [
       {
         data: [JSON.parse(localStorage.getItem('monthlyGoal'))],
@@ -248,7 +300,9 @@ export class FinancialsPage implements OnInit, OnDestroy {
         barThickness: 50,
       },
     ];
+
   }
+
 
   ionViewWillEnter() {
     this.isLoading = true;
@@ -329,6 +383,17 @@ export class FinancialsPage implements OnInit, OnDestroy {
 
   onEditItem(id: string) {
     this.openModal(id);
+  }
+
+  async archiveReceipts() {
+      const modal = await this.modalController.create({
+      component: NewMonthPage,
+      componentProps: {
+        utteranceId: null
+      },
+      cssClass: 'small-modal-css',
+    });
+    return await modal.present();
   }
 
   async openModal(id: string) {
