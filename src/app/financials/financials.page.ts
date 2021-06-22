@@ -3,14 +3,9 @@ import { NewMonthPage } from './new-month/new-month.page';
 import { HowMuchPage } from './how-much/how-much.page';
 import { Chart, ChartDataSets, ChartType, ChartOptions } from 'chart.js';
 import { Color, Label, ChartsModule, BaseChartDirective } from 'ng2-charts';
-import {
-  IonItemSliding,
-  IonReorderGroup,
-  ModalController,
-} from '@ionic/angular';
+import { IonReorderGroup, ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { ItemReorderEventDetail } from '@ionic/core';
 import { UtteranceService } from './../bam/utterance.service';
 import { Utterance } from './../bam/utterance.model';
 import ChartDataLabels from 'chartjs-plugin-datalabels';

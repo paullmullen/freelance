@@ -51,7 +51,12 @@ const routes: Routes = [
   {
     path: 'financials',
     loadChildren: () => import('./financials/financials.module').then( m => m.FinancialsPageModule)
+  },  {
+    path: 'summary',
+    loadChildren: () => import('./summary/summary.module').then( m => m.SummaryPageModule)
   }
+
+
 ];
 
 @NgModule({

@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Summary</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="chart-wrapper">
+  <canvas
+    baseChart
+    class="chart"
+    [datasets]="barChartData"
+    [labels]="barChartLabels"
+    [options]="barChartOptions"
+    [plugins]="barChartPlugins"
+    [legend]="barChartLegend"
+    [chartType]="barChartType"
+    height="75"
+    (click)="onClickChart()"
+  >
+  </canvas>
+</div>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        size-md="6"
+        offset-md="2"
+        class="ion-text-center"
+        *ngIf="isLoading"
+      >
+        <ion-spinner color="primary"></ion-spinner>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col
+        size-md="6"
+        offset-md="2"
+        *ngIf="!isLoading && (!listedLoadedUtterances || listedLoadedUtterances.length <= 0)"
+        class="ion-text-center"
+      >
+        <p>No items found.</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col
+        size-md="6"
+        offset-md="2"
+        *ngIf="!isLoading && listedLoadedUtterances && listedLoadedUtterances.length > 0"
+      >
+        <ion-list>
+          <ng-container *ngFor="let item of displayData">
+            <ion-item>
+              <ion-icon
+                *ngIf="item.urgency"
+                name="ellipse"
+                color="danger"
+                slot="end"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="item.importance"
+                name="ellipse"
+                color="primary"
+                slot="end"
+              ></ion-icon>
+              <ion-label class="ion-text-wrap" color="dark" class="ion-padding"
+                >{{item.utterance}}</ion-label
+              >
+            </ion-item>
+          </ng-container>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-md="5" offset="2">
+        <ion-text style="text-align: center" color="danger">Urgent</ion-text>
+        </ion-col>
+      <ion-col size-md="5">
+      <ion-text style="text-align: center" color="primary">Important</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>
