@@ -40,9 +40,9 @@ export class SummaryPage implements OnInit {
   private offerToArchive: boolean;
 
   //related to quote of the day
-  private newQuote;
-  private quotation: string;
-  private author: string;
+  newQuote;
+  quotation: string;
+  author: string;
 
   invoicedAmount = 0;
   forecastAmount = 0;
