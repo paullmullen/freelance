@@ -257,13 +257,13 @@ export class FinancialsPage implements OnInit, OnDestroy {
 
     // recalculate the amount of each category for the graph
     this.loadedUtterances.forEach((item) => {
-      if (item.project === 'Invoiced' && !item.archived) {
+      if (item.project === 'Invoiced' && !item.archived && item.amount && item.user === this.usersUid) {
         this.invoicedAmount += item.amount;
       }
-      if (item.project === 'Forecast' && !item.archived) {
+      if (item.project === 'Forecast' && !item.archived && item.amount && item.user === this.usersUid) {
         this.forecastAmount += item.amount;
       }
-      if (item.project === 'Received' && !item.archived) {
+      if (item.project === 'Received' && !item.archived && item.amount && item.user === this.usersUid) {
         this.receivedAmount += item.amount;
       }
     });

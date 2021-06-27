@@ -5,7 +5,7 @@ import { CanLoad, PreloadAllModules, RouterModule, Routes } from '@angular/route
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'bam',
+    redirectTo: 'summary',
     pathMatch: 'full'
   },
   {
@@ -51,7 +51,8 @@ const routes: Routes = [
   {
     path: 'financials',
     loadChildren: () => import('./financials/financials.module').then( m => m.FinancialsPageModule)
-  },  {
+  },
+  {
     path: 'summary',
     loadChildren: () => import('./summary/summary.module').then( m => m.SummaryPageModule)
   }

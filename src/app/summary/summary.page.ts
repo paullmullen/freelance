@@ -1,3 +1,4 @@
+import { QuotationsService } from './quotations.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Chart, ChartDataSets, ChartType, ChartOptions } from 'chart.js';
@@ -18,8 +19,10 @@ export class SummaryPage implements OnInit {
   constructor(
     private UtteranceService: UtteranceService,
     public modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private QuotationsService:QuotationsService
   ) {}
+
 
   @ViewChild(BaseChartDirective) barChart: BaseChartDirective;
 
@@ -35,6 +38,11 @@ export class SummaryPage implements OnInit {
   private thisMonth: number;
   private thisYear: number;
   private offerToArchive: boolean;
+
+  //related to quote of the day
+  private newQuote;
+  private quotation: string;
+  private author: string;
 
   invoicedAmount = 0;
   forecastAmount = 0;
@@ -95,6 +103,18 @@ export class SummaryPage implements OnInit {
     } catch {
       localStorage.setItem('monthlyGoal', '1000');
     }
+
+    this.QuotationsService.getQuotation().subscribe( data => {
+      if(data) {
+        this.newQuote = data;
+        this.quotation = this.newQuote.contents.quotes[0].quote;
+        this.author = this.newQuote.contents.quotes[0].author;
+      } else {
+        this.quotation = null;
+        this.author = null;
+      }
+    })
+
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
       (Utterances) => {
         if (Utterances) {
@@ -105,20 +125,25 @@ export class SummaryPage implements OnInit {
               (item.project === 'Invoiced' ||
                 item.project === 'Forecast' ||
                 item.project === 'Received') &&
-              !item.archived
+              !item.archived &&
+              item.user === this.usersUid
           );
+          this.invoicedAmount = 0;
+          this.receivedAmount = 0;
+          this.forecastAmount = 0;
           // recalculate the amount of each category for the graph
           this.listedLoadedUtterances.forEach((item) => {
-            if (item.project === 'Invoiced' && !item.archived) {
+            if (item.project === 'Invoiced' && !item.archived && item.amount) {
               this.invoicedAmount += item.amount;
             }
-            if (item.project === 'Forecast' && !item.archived) {
+            if (item.project === 'Forecast' && !item.archived && item.amount) {
               this.forecastAmount += item.amount;
             }
-            if (item.project === 'Received' && !item.archived) {
+            if (item.project === 'Received' && !item.archived && item.amount) {
               this.receivedAmount += item.amount;
             }
-          });
+          }
+          );
           // now filter to only those that are urgent or important and not complete and not archived.
           this.listedLoadedUtterances = this.loadedUtterances.filter(
             (utter) =>
@@ -164,6 +189,11 @@ export class SummaryPage implements OnInit {
     this.UtteranceService.getUtterances().subscribe((utts) => {
       this.isLoading = false;
     });
+  }
+
+  onClickChart() {
+    this.router.navigate(['financials']);
+
   }
 }
 
