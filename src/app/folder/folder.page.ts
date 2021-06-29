@@ -1,12 +1,18 @@
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
 import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { FormGroup, FormControl, Validators, FormsModule } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormsModule,
+} from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SpeechRecognition } from '@ionic-native/speech-recognition/ngx';
 import { LexRuntime } from 'aws-sdk';
 import { Message } from '../messages';
 import { environment } from '../../environments/environment';
+import { QuotationsService } from './../summary/quotations.service';
 
 @Component({
   selector: 'app-folder',
@@ -19,18 +25,23 @@ export class FolderPage implements OnInit {
   lex: LexRuntime;
   toDo: string = '';
   messages: Message[] = [];
-  lexState: string = 'OK, what\'s up?';
+  lexState: string = "OK, what's up?";
   messageSent: string = '';
   messageReceived: string = '';
   usersName: string;
   usersEmail: string;
   usersUid: string;
+  quoteObject: any;
+  quoteCategories: any;
+  quoteCategoriesArray;
+  selectedQuotation: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private speechRecognition: SpeechRecognition,
     private modalController: ModalController,
-    private routerOutlet: IonRouterOutlet
+    private routerOutlet: IonRouterOutlet,
+    private QuotationsService: QuotationsService
   ) {}
 
   ngOnInit() {
@@ -57,12 +68,24 @@ export class FolderPage implements OnInit {
         );
       }
     });
+    this.getQuoteCategories();
   }
 
-  ionViewWillEnter(){
+  ionViewWillEnter() {
     this.usersName = JSON.parse(localStorage.getItem('user')).displayName;
     this.usersEmail = JSON.parse(localStorage.getItem('user')).email;
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
+    console.log(localStorage.getItem('selectedQuotation'));
+    try {
+      this.selectedQuotation = localStorage.getItem('selectedQuotation');
+      if (this.selectedQuotation === null) {
+        this.selectedQuotation = 'inspire';
+        localStorage.setItem('selectedQuotation', 'inspire');
+      }
+    } catch {
+      this.selectedQuotation = 'inspire';
+      localStorage.setItem('selectedQuotation', 'inspire');
+    }
   }
 
   getSpeech() {
@@ -87,9 +110,9 @@ export class FolderPage implements OnInit {
       .create({
         component: DismissBamPage,
         componentProps: {
-            messageSent: this.messageSent,
-            messageReceived: this.messageReceived
-            },
+          messageSent: this.messageSent,
+          messageReceived: this.messageReceived,
+        },
         swipeToClose: true,
         presentingElement: this.routerOutlet.nativeEl,
         showBackdrop: true,
@@ -128,5 +151,23 @@ export class FolderPage implements OnInit {
       }
     });
     this.toDo = null;
+  }
+
+  getQuoteCategories() {
+    this.QuotationsService.getCategories().subscribe((data) => {
+      if (data) {
+        this.quoteCategories = data;
+        this.quoteCategoriesArray = Object.keys(
+          this.quoteCategories.contents.categories
+        ).map((key) => ({
+          reference: key,
+          description: this.quoteCategories.contents.categories[key],
+        }));
+      }
+    });
+  }
+
+  onClickQuotationCategory(value: string) {
+    localStorage.setItem('selectedQuotation', value);
   }
 }

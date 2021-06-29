@@ -20,9 +20,8 @@ export class SummaryPage implements OnInit {
     private UtteranceService: UtteranceService,
     public modalController: ModalController,
     private router: Router,
-    private QuotationsService:QuotationsService
+    private QuotationsService: QuotationsService
   ) {}
-
 
   @ViewChild(BaseChartDirective) barChart: BaseChartDirective;
 
@@ -41,6 +40,7 @@ export class SummaryPage implements OnInit {
 
   //related to quote of the day
   newQuote;
+  quoteCategories;
   quotation: string;
   author: string;
 
@@ -104,8 +104,8 @@ export class SummaryPage implements OnInit {
       localStorage.setItem('monthlyGoal', '1000');
     }
 
-    this.QuotationsService.getQuotation().subscribe( data => {
-      if(data) {
+    this.QuotationsService.getQuotation().subscribe((data) => {
+      if (data) {
         this.newQuote = data;
         this.quotation = this.newQuote.contents.quotes[0].quote;
         this.author = this.newQuote.contents.quotes[0].author;
@@ -113,7 +113,9 @@ export class SummaryPage implements OnInit {
         this.quotation = null;
         this.author = null;
       }
-    })
+    });
+
+
 
     this.UtteranceSub = this.UtteranceService.utterances.subscribe(
       (Utterances) => {
@@ -142,15 +144,15 @@ export class SummaryPage implements OnInit {
             if (item.project === 'Received' && !item.archived && item.amount) {
               this.receivedAmount += item.amount;
             }
-          }
-          );
+          });
           // now filter to only those that are urgent or important and not complete and not archived.
           this.listedLoadedUtterances = this.loadedUtterances.filter(
             (utter) =>
               utter.user === this.usersUid &&
               (utter.importance || utter.urgency) &&
               !utter.archived &&
-              !utter.complete && !utter.isFinancials
+              !utter.complete &&
+              !utter.isFinancials
           );
           this.displayData = this.listedLoadedUtterances;
           // draw the chart
@@ -193,7 +195,5 @@ export class SummaryPage implements OnInit {
 
   onClickChart() {
     this.router.navigate(['financials']);
-
   }
 }
-
