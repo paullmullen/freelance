@@ -1,3 +1,4 @@
+import { EditPage } from './edit/edit.page';
 import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
 import { IonItemSliding,  ModalController,  IonReorderGroup,} from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -142,7 +143,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   async onMarkComplete(id: string, slidingEl: IonItemSliding) {
     slidingEl.close();
-    this.UtteranceService.markComplete(id);
+    this.UtteranceService.markComplete(id, true);
 
     // the database is updated, now update the local array of utterances.
     this.loadedUtterances.forEach((item) => {
@@ -283,5 +284,22 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
     console.log('Something went wrong finding ItemId for reordered item.');
     return '';
+  }
+
+  editItem(id: string) {
+ {
+
+    this.modalController
+      .create({
+        component: EditPage,
+        componentProps: {
+          utteranceId: id        },
+      })
+      .then((modalEl) => {
+        modalEl.present();
+      });
+    return;
+  }
+
   }
 }

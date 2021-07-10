@@ -183,6 +183,34 @@ export class UtteranceService {
       )
       .subscribe(() => console.log('Updated Project'));
   }
+
+  updateContent(uttId: string, newContent: string) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].utterance = newContent;
+
+
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            {
+              utterance: newContent,
+              id: null,
+            }
+          );
+        }),
+        tap((result) => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log('Updated Content'));
+  }
   updateAmount(uttId: string, newAmount: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
@@ -206,7 +234,7 @@ export class UtteranceService {
       .subscribe(() => console.log('Updated Tag'));
   }
 
-  markComplete(uttId: string) {
+  markComplete(uttId: string, state: boolean) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -214,7 +242,43 @@ export class UtteranceService {
         switchMap((utts) => {
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { complete: true, id: null }
+            { complete: state, id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log(uttId, ' marked complete'));
+  }
+
+  markUrgent(uttId: string,  state: boolean) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { urgent: state, id: null }
+          );
+        }),
+        tap(() => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe(() => console.log(uttId, ' marked complete'));
+  }
+
+  markImportant(uttId: string,  state: boolean) {
+    let updatedUtterances: Utterance[];
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          return this.http.patch(
+            `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+            { important: state, id: null }
           );
         }),
         tap(() => {
@@ -242,7 +306,7 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' marked financials'));
   }
 
-  archive (uttId: string) {
+  archive (uttId: string, date: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -250,7 +314,7 @@ export class UtteranceService {
         switchMap((utts) => {
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { archived: Date(), id: null }
+            { archived: date, id: null }
           );
         }),
         tap(() => {

@@ -1,3 +1,4 @@
+import { EditPageModule } from './my-stuff/edit/edit.module';
 import { AuthGuard } from './auth/auth.guard';
 import { NgModule } from '@angular/core';
 import { CanLoad, PreloadAllModules, RouterModule, Routes } from '@angular/router';
@@ -55,8 +56,11 @@ const routes: Routes = [
   {
     path: 'summary',
     loadChildren: () => import('./summary/summary.module').then( m => m.SummaryPageModule)
+  },
+  {
+    path: 'edit',
+    loadChildren: () => import('./my-stuff/edit/edit.module').then( m => m.EditPageModule)
   }
-
 
 ];
 

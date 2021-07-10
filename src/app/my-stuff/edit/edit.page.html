@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Edit Item</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col offset="1" size="10">
+        <ion-item>
+          <ion-label position="stacked">Content</ion-label>
+
+          <ion-textarea
+            #contentField
+            rows="5"
+            padding
+            value="{{this.theUtterance[0].utterance}}"
+            (ionChange)="changeContent($event)"
+            (ionBlur)="updateContent($event)"
+          >
+          </ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Tag</ion-label>
+          <ion-select (ionChange)="changeTag($event)">
+            <div *ngFor="let tag of loadedTags">
+              <ion-select-option>{{ tag.tagText }}</ion-select-option>
+            </div>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Project</ion-label>
+          <ion-input
+            (ionChange)="changeProject($event)"
+            (ionBlur)="updateProject($event)"
+            value="{{ this.theUtterance[0].project }}"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>&nbsp;</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>Urgent</ion-label>
+          <div *ngIf="this.isUrgent; then urgChecked else urgUnChecked"></div>
+          <ng-template #urgChecked>
+            <ion-toggle
+              slot="start"
+              checked
+              (ionChange)="changeUrgent($event)"
+            ></ion-toggle>
+          </ng-template>
+          <ng-template #urgUnChecked>
+            <ion-toggle
+              slot="start"
+              (ionChange)="changeUrgent($event)"
+              unchecked
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Important</ion-label>
+          <div
+            *ngIf="this.isImportant; then impChecked else impUnChecked"
+          ></div>
+          <ng-template #impChecked>
+            <ion-toggle
+              slot="start"
+              checked
+              (ionChange)="changeImportant($event)"
+            ></ion-toggle>
+          </ng-template>
+          <ng-template #impUnChecked>
+            <ion-toggle
+              slot="start"
+              unchecked
+              (ionChange)="changeImportant($event)"
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Financial</ion-label>
+          <div
+            *ngIf="this.isFinancials; then finChecked else finUnChecked"
+          ></div>
+          <ng-template #finChecked>
+            <ion-toggle
+              slot="start"
+              checked
+              (ionChange)="changeFinancial($event)"
+              ([ngModel])="this.isFinancials"
+            ></ion-toggle>
+          </ng-template>
+          <ng-template #finUnChecked>
+            <ion-toggle
+              slot="start"
+              unchecked
+              (ionChange)="changeFinancial($event)"
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Complete</ion-label>
+          <div *ngIf="this.isComplete; then comChecked else comUnChecked"></div>
+          <ng-template #comChecked>
+            <ion-toggle
+              slot="start"
+              checked
+              (ionChange)="changeComplete($event)"
+            ></ion-toggle>
+          </ng-template>
+          <ng-template #comUnChecked>
+            <ion-toggle
+              slot="start"
+              unchecked
+              (ionChange)="changeComplete($event)"
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Archived</ion-label>
+          <div *ngIf="this.isArchived; then arcChecked else arcUnChecked"></div>
+          <ng-template #arcChecked>
+            <ion-toggle
+              slot="start"
+              (ionChange)="changeArchived($event)"
+              [disabled]="!this.isFinancials"
+              [(ngModel)]="this.isArchived"
+            ></ion-toggle>
+            <ion-item text-wrap>
+              <div class="archiveWarning"><a style="color:black; font-size: 1.0rem;">Archived</a><br>If you archive this item, you can no longer edit it.</div>
+            </ion-item>
+          </ng-template>
+          <ng-template #arcUnChecked>
+            <ion-toggle
+              slot="start"
+              unchecked
+              (ionChange)="changeArchived($event)"
+              [disabled]="!this.isFinancials"
+              [(ngModel)]="this.isArchived"
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col> &nbsp; </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="ion-text-center">
+        <ion-button (click)="onSaveButton()">Save</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

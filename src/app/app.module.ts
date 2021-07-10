@@ -1,3 +1,4 @@
+import { EditPageModule } from './my-stuff/edit/edit.module';
 import { FinancialsPageModule } from './financials/financials.module';
 import { FolderPageModule } from './folder/folder.module';
 import { TagUtterancesPageModule } from './my-stuff/tag-utterances/tag-utterances.module';
@@ -44,6 +45,7 @@ import { DecimalPipe } from '@angular/common';
     FolderPageModule,
     ChartsModule,
     FinancialsPageModule,
+    EditPageModule,
 
   ],
   providers: [

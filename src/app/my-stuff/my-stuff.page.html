@@ -71,7 +71,7 @@
 
 
           <ion-item-sliding *ngFor="let item_sub of item[1]"
-            #slidingUtterance
+            #slidingUtterance (click)="editItem(item_sub.id)"
           >
           <ion-item>
             <ion-icon

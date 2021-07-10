@@ -62,7 +62,7 @@ export class NewMonthPage implements OnInit, OnDestroy {
           // for each item, now archive it.
           this.listedLoadedUtterances.forEach((element) => {
 
-            this.UtteranceService.archive(element.id);
+            this.UtteranceService.archive(element.id, Date());
           });
         }
       }
