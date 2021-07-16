@@ -120,7 +120,7 @@ export class UtteranceService {
 
   // ---------------------------- additional tags services -------------------------
 
-  updateTag(uttId: string, newTag: string, newUtterance: string, user: string) {
+  updateTag(uttId: string, newTag: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -131,18 +131,13 @@ export class UtteranceService {
           );
           updatedUtterances = [...utts];
           const oldUtterance = updatedUtterances[updatedUtteranceIndex];
-          updatedUtterances[updatedUtteranceIndex] = new Utterance(
-            oldUtterance.id,
-            oldUtterance.utterance,
-            newTag,
-            user
-          );
+          updatedUtterances[updatedUtteranceIndex].tag = newTag;
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
             { tag: newTag, id: null }
           );
         }),
-        tap(() => {
+        tap((result) => {
           this._utterances.next(updatedUtterances);
         })
       )
@@ -240,6 +235,12 @@ export class UtteranceService {
       .pipe(
         take(1),
         switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].complete = state;
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
             { complete: state, id: null }
@@ -252,51 +253,69 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' marked complete'));
   }
 
-  markUrgent(uttId: string,  state: boolean) {
+  markUrgent(uttId: string,  state: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
         take(1),
         switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].urgency = state;
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { urgent: state, id: null }
+            { urgency: state, id: null }
           );
         }),
         tap(() => {
           this._utterances.next(updatedUtterances);
         })
       )
-      .subscribe(() => console.log(uttId, ' marked complete'));
+      .subscribe(() => console.log(uttId, ' marked urgent', state));
   }
 
-  markImportant(uttId: string,  state: boolean) {
+  markImportant(uttId: string,  state: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
         take(1),
         switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].importance = state;
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { important: state, id: null }
+            { importance: state, id: null }
           );
         }),
         tap(() => {
           this._utterances.next(updatedUtterances);
         })
       )
-      .subscribe(() => console.log(uttId, ' marked complete'));
+      .subscribe(() => console.log(uttId, ' marked important'));
   }
 
-  moveToFinancials(uttId: string) {
+  moveToFinancials(uttId: string, state: boolean) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
         take(1),
         switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].isFinancials = state;
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
-            { isFinancials: true, id: null }
+            { isFinancials: state, id: null }
           );
         }),
         tap(() => {
@@ -312,6 +331,12 @@ export class UtteranceService {
       .pipe(
         take(1),
         switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+          updatedUtterances[updatedUtteranceIndex].archived = date;
+
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
             { archived: date, id: null }

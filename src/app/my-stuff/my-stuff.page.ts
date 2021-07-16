@@ -54,7 +54,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
             this.sortItems('importance', 'dec');
             this.sortItems('urgency', 'dec');
             this.listedLoadedUtterances = this.loadedUtterances.filter(
-              (utter) => (utter.user === this.usersUid) && (utter.complete === false) && (!utter.isFinancials === true)
+              (utter) => (utter.user === this.usersUid) && (!(utter.complete === true)) && (!(utter.isFinancials === true))
             );
           }
           const getData = this.groupMethod(
@@ -156,7 +156,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
 
   async onMoveToFinancials(id: string, slidingEl: IonItemSliding) {
     slidingEl.close();
-    this.UtteranceService.moveToFinancials(id);
+    this.UtteranceService.moveToFinancials(id, true);
     this.UtteranceService.updateProject(id, 'Forecast');
 
 
@@ -191,7 +191,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
               // only show non-completed items
               if (whatToShow.value === 'all') {
                 this.filteredUtterances = this.loadedUtterances.filter(
-                  (utter) => utter.user === this.usersUid && utter.complete === false  && !utter.isFinancials === true
+                  (utter) => utter.user === this.usersUid && utter.complete === false  && !(utter.isFinancials === true)
                   );
                 } else if (whatToShow.value === 'tagged') {
                   this.filteredUtterances = this.loadedUtterances.filter(
@@ -286,8 +286,9 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return '';
   }
 
-  editItem(id: string) {
+  editItem(id: string, slidingEl: IonItemSliding) {
  {
+  slidingEl.close();
 
     this.modalController
       .create({

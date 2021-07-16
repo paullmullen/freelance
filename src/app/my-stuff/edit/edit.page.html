@@ -15,7 +15,7 @@
             #contentField
             rows="5"
             padding
-            value="{{this.theUtterance[0].utterance}}"
+            value="{{this.content}}"
             (ionChange)="changeContent($event)"
             (ionBlur)="updateContent($event)"
           >
@@ -24,8 +24,8 @@
 
         <ion-item>
           <ion-label>Tag</ion-label>
-          <ion-select (ionChange)="changeTag($event)">
-            <div *ngFor="let tag of loadedTags">
+          <ion-select (ionChange)="changeTag($event)" value="{{this.theTag}}">
+            <div *ngFor="let tag of this.loadedTags">
               <ion-select-option>{{ tag.tagText }}</ion-select-option>
             </div>
           </ion-select>
@@ -35,9 +35,10 @@
           <ion-input
             (ionChange)="changeProject($event)"
             (ionBlur)="updateProject($event)"
-            value="{{ this.theUtterance[0].project }}"
+            value="{{ this.theProject }}"
           ></ion-input>
         </ion-item>
+
         <ion-item>
           <ion-label>&nbsp;</ion-label>
         </ion-item>
@@ -110,14 +111,14 @@
             <ion-toggle
               slot="start"
               checked
-              (ionChange)="changeComplete($event)"
+              (ionChange)="changeComplete(false)"
             ></ion-toggle>
           </ng-template>
           <ng-template #comUnChecked>
             <ion-toggle
               slot="start"
               unchecked
-              (ionChange)="changeComplete($event)"
+              (ionChange)="changeComplete(true)"
             ></ion-toggle>
           </ng-template>
         </ion-item>
