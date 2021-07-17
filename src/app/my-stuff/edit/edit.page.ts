@@ -105,7 +105,7 @@ export class EditPage implements OnInit {
   }
 
   // gets called on ionBlur, and if the content is changed, update database
-  changeProject() {
+  changeProject(event) {
     this.projectChanged = true;
 
   }
