@@ -60,7 +60,11 @@ const routes: Routes = [
   {
     path: 'edit',
     loadChildren: () => import('./my-stuff/edit/edit.module').then( m => m.EditPageModule)
+  },  {
+    path: 'archived',
+    loadChildren: () => import('./archived/archived.module').then( m => m.ArchivedPageModule)
   }
+
 
 ];
 

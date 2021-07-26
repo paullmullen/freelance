@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Archived</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="emailArchive()">Export</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col offset="1" size="4">
+        <ion-label position="floating">From</ion-label>
+        <ion-datetime
+          placeholder="Select Date"
+          pickerFormat="MMMM YYYY"
+          displayFormat="MMMM YYYY"
+          (ionChange)="onChangeFrom($event)"
+          value={{this.fromDate}}
+        ></ion-datetime>
+      </ion-col>
+      <ion-col offset="1" size="4">
+        <ion-label position="floating">To</ion-label>
+        <ion-datetime
+          placeholder="Select Date"
+          pickerFormat="MMMM YYYY"
+          displayFormat="MMMM YYYY"
+          (ionChange)="onChangeTo($event)"
+          value={{this.toDate}}
+        ></ion-datetime>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col offset="1" size="10">
+        <ion-list>
+          <ion-item *ngFor="let item of listedLoadedUtterances">
+            <ion-grid>
+              <ion-row>
+                <ion-col> {{item.utterance}} </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="4" class="currency"
+                  ><div *ngIf="item.amount>0">${{item.amount}}</div></ion-col
+                >
+                <ion-col size="6"> {{item.archived}}</ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

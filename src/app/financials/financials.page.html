@@ -9,7 +9,8 @@
 
 <div class="chart-wrapper">
   <canvas
-    baseChart class="chart"
+    baseChart
+    class="chart"
     [datasets]="barChartData"
     [labels]="barChartLabels"
     [options]="barChartOptions"
@@ -17,10 +18,12 @@
     [legend]="barChartLegend"
     [chartType]="barChartType"
     height="75"
-    (click) = "onClickChart()"
+    (click)="onClickChart()"
   >
   </canvas>
-  <p style="font-size: x-small; text-align: center; padding: 0px;">Tap chart to update goal.</p>
+  <p style="font-size: x-small; text-align: center; padding: 0px">
+    Tap chart to update goal.
+  </p>
 </div>
 <ion-content>
   <ion-grid>
@@ -57,9 +60,21 @@
           >
             <ng-container *ngFor="let item of displayData">
               <ion-item *ngIf="!(item[0].trim()==='')">
-                <ion-label *ngIf="item[0]==='Forecast'" style="color: rgb(0,0,200); font-weight: bold;">{{item[0]}}</ion-label>
-                <ion-label *ngIf="item[0]==='Invoiced'" style="color: rgb(0,175,250); font-weight: bold;">{{item[0]}}</ion-label>
-                <ion-label *ngIf="item[0]==='Received'" style="color: rgb(0,200,100); font-weight: bold;">{{item[0]}}</ion-label>
+                <ion-label
+                  *ngIf="item[0]==='Forecast'"
+                  style="color: rgb(0, 0, 200); font-weight: bold"
+                  >{{item[0]}}</ion-label
+                >
+                <ion-label
+                  *ngIf="item[0]==='Invoiced'"
+                  style="color: rgb(0, 175, 250); font-weight: bold"
+                  >{{item[0]}}</ion-label
+                >
+                <ion-label
+                  *ngIf="item[0]==='Received'"
+                  style="color: rgb(0, 200, 100); font-weight: bold"
+                  >{{item[0]}}</ion-label
+                >
               </ion-item>
               <ion-item *ngIf="(item[0].trim()==='')">
                 <h2>No Project Assigned</h2>
@@ -78,16 +93,26 @@
                     color="dark"
                     class="ion-padding"
                   >
-                    <div *ngIf="(item_sub.amount) && (item_sub.utterance !== null)" style="font-size: x-small; font-style: italic;">${{ item_sub.amount  | number: '1.2-2'}}</div> {{ item_sub.utterance }}
+                    <div
+                      *ngIf="(item_sub.amount) && (item_sub.utterance !== null)"
+                      style="font-size: x-small; font-style: italic"
+                    >
+                      ${{ item_sub.amount | number: '1.2-2'}}
+                    </div>
+                    {{ item_sub.utterance }}
                   </ion-label>
                 </ion-item>
                 <ion-item-options>
+                  <ion-item-option (click)="onEditAmount(item_sub.id)" color="success">
+                    <ion-icon name="logo-usd" slot="icon-only"></ion-icon>
+                  </ion-item-option>
                   <ion-item-option
-                  (click)="onEditItem(item_sub.id)"
+                    (click)="onEditItem(item_sub.id, slidingUtterance)"
+                    color="warning"
                   >
-                  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-                </ion-item-option>
-             </ion-item-options>
+                    <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
               </ion-item-sliding>
             </ng-container>
           </ion-reorder-group>

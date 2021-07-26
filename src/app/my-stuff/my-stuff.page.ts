@@ -1,6 +1,10 @@
 import { EditPage } from './edit/edit.page';
 import { TagUtterancesPage } from './tag-utterances/tag-utterances.page';
-import { IonItemSliding,  ModalController,  IonReorderGroup,} from '@ionic/angular';
+import {
+  IonItemSliding,
+  ModalController,
+  IonReorderGroup,
+} from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
@@ -54,7 +58,10 @@ export class MyStuffPage implements OnInit, OnDestroy {
             this.sortItems('importance', 'dec');
             this.sortItems('urgency', 'dec');
             this.listedLoadedUtterances = this.loadedUtterances.filter(
-              (utter) => (utter.user === this.usersUid) && (!(utter.complete === true)) && (!(utter.isFinancials === true))
+              (utter) =>
+                utter.user === this.usersUid &&
+                !(utter.complete === true) &&
+                !(utter.isFinancials === true)
             );
           }
           const getData = this.groupMethod(
@@ -159,7 +166,6 @@ export class MyStuffPage implements OnInit, OnDestroy {
     this.UtteranceService.moveToFinancials(id, true);
     this.UtteranceService.updateProject(id, 'Forecast');
 
-
     // the database is updated, now update the local array of utterances.
     this.loadedUtterances.forEach((item) => {
       if (item.id === id) {
@@ -176,27 +182,31 @@ export class MyStuffPage implements OnInit, OnDestroy {
         // show all items
         if (whatToShow.value === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.user === this.usersUid && !utter.isFinancials === true
-            );
-          } else if (whatToShow.value === 'tagged') {
-            this.filteredUtterances = this.loadedUtterances.filter(
-              (utter) => utter.tag.length > 0 && utter.user === this.usersUid
-              );
-            } else {
-              this.filteredUtterances = this.loadedUtterances.filter(
-                (utter) => utter.tag.length === 0 && utter.user === this.usersUid
-                );
-              }
-            } else {
-              // only show non-completed items
-              if (whatToShow.value === 'all') {
-                this.filteredUtterances = this.loadedUtterances.filter(
-                  (utter) => utter.user === this.usersUid && utter.complete === false  && !(utter.isFinancials === true)
-                  );
-                } else if (whatToShow.value === 'tagged') {
-                  this.filteredUtterances = this.loadedUtterances.filter(
-                    (utter) =>
-                    utter.tag.length > 0 &&
+            (utter) =>
+              utter.user === this.usersUid && !utter.isFinancials === true
+          );
+        } else if (whatToShow.value === 'tagged') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.tag.length > 0 && utter.user === this.usersUid
+          );
+        } else {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) => utter.tag.length === 0 && utter.user === this.usersUid
+          );
+        }
+      } else {
+        // only show non-completed items
+        if (whatToShow.value === 'all') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              utter.user === this.usersUid &&
+              utter.complete === false &&
+              !(utter.isFinancials === true)
+          );
+        } else if (whatToShow.value === 'tagged') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              utter.tag.length > 0 &&
               utter.user === this.usersUid &&
               utter.complete === false
           );
@@ -287,20 +297,20 @@ export class MyStuffPage implements OnInit, OnDestroy {
   }
 
   editItem(id: string, slidingEl: IonItemSliding) {
- {
-  slidingEl.close();
+    {
+      slidingEl.close();
 
-    this.modalController
-      .create({
-        component: EditPage,
-        componentProps: {
-          utteranceId: id        },
-      })
-      .then((modalEl) => {
-        modalEl.present();
-      });
-    return;
-  }
-
+      this.modalController
+        .create({
+          component: EditPage,
+          componentProps: {
+            utteranceId: id,
+          },
+        })
+        .then((modalEl) => {
+          modalEl.present();
+        });
+      return;
+    }
   }
 }

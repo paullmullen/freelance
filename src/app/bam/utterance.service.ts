@@ -226,7 +226,7 @@ export class UtteranceService {
           this._utterances.next(updatedUtterances);
         })
       )
-      .subscribe(() => console.log('Updated Tag'));
+      .subscribe(() => console.log('Updated Amount'));
   }
 
   markComplete(uttId: string, state: boolean) {

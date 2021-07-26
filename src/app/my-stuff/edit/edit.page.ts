@@ -6,7 +6,6 @@ import { Utterance } from './../../bam/utterance.model';
 import { UtteranceService } from './../../bam/utterance.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { ENETDOWN } from 'node:constants';
 
 @Component({
   selector: 'app-edit',
@@ -40,6 +39,7 @@ export class EditPage implements OnInit {
   content: string;
   theTag: string;
   theProject: string;
+  theAmount: string;
 
   ngOnInit() {
     // Get Utterance details
@@ -59,9 +59,10 @@ export class EditPage implements OnInit {
           this.isArchived = this.theUtterance[0].archived ? true : false;
           this.isUrgent = this.theUtterance[0].urgency ? true : false;
           this.isImportant = this.theUtterance[0].importance ? true : false;
-        }
+          this.theAmount = this.theUtterance[0].amount.toString();
+        } else { console.log('error loading utterances'); }
       }
-    );
+      );
 
     // get list of valid tags
     this.TagSub = this.TagService.tags.subscribe((Tags) => {
@@ -170,4 +171,9 @@ export class EditPage implements OnInit {
     }
 
   }
+
+  updateAmount(event) {
+    this.UtteranceService.updateAmount(this.utteranceId, event.detail.srcElement.value);
+  }
+
 }

@@ -83,7 +83,26 @@
         </ion-item>
 
         <ion-item>
-          <ion-label>Financial</ion-label>
+          <ion-label>Complete</ion-label>
+          <div *ngIf="this.isComplete; then comChecked else comUnChecked"></div>
+          <ng-template #comChecked>
+            <ion-toggle
+              slot="start"
+              checked
+              (ionChange)="changeComplete(false)"
+            ></ion-toggle>
+          </ng-template>
+          <ng-template #comUnChecked>
+            <ion-toggle
+              slot="start"
+              unchecked
+              (ionChange)="changeComplete(true)"
+            ></ion-toggle>
+          </ng-template>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Financials</ion-label>
           <div
             *ngIf="this.isFinancials; then finChecked else finUnChecked"
           ></div>
@@ -105,21 +124,21 @@
         </ion-item>
 
         <ion-item>
-          <ion-label>Complete</ion-label>
-          <div *ngIf="this.isComplete; then comChecked else comUnChecked"></div>
-          <ng-template #comChecked>
-            <ion-toggle
-              slot="start"
-              checked
-              (ionChange)="changeComplete(false)"
-            ></ion-toggle>
+          <ion-label position="stacked">Amount</ion-label>
+          <div
+            *ngIf="this.isFinancials; then finChecked2 else finUnChecked2"
+          ></div>
+          <ng-template #finChecked2>
+            <ion-input
+            value={{this.theAmount}}
+            type="number"
+            ng-pattern="reg = /^[0-9]{1,2}$/;"
+            inputmode ="numeric"
+            (ionBlur)="updateAmount($event)"
+            ></ion-input>
           </ng-template>
-          <ng-template #comUnChecked>
-            <ion-toggle
-              slot="start"
-              unchecked
-              (ionChange)="changeComplete(true)"
-            ></ion-toggle>
+          <ng-template #finUnChecked2>
+            <ion-input  value="" disabled></ion-input>
           </ng-template>
         </ion-item>
 
@@ -134,7 +153,10 @@
               [(ngModel)]="this.isArchived"
             ></ion-toggle>
             <ion-item text-wrap>
-              <div class="archiveWarning"><a style="color:black; font-size: 1.0rem;">Archived</a><br>If you archive this item, you can no longer edit it.</div>
+              <div class="archiveWarning">
+                <a style="color: black; font-size: 1rem">Archived</a><br />If
+                you archive this item, you can no longer edit it.
+              </div>
             </ion-item>
           </ng-template>
           <ng-template #arcUnChecked>
