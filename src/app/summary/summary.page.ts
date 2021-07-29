@@ -148,11 +148,10 @@ export class SummaryPage implements OnInit {
           // now filter to only those that are urgent or important and not complete and not archived.
           this.listedLoadedUtterances = this.loadedUtterances.filter(
             (utter) =>
-              utter.user === this.usersUid &&
+              utter.user === this.usersUid && !(utter.complete === true) &&
               (utter.importance || utter.urgency) &&
-              !utter.archived &&
-              !utter.complete &&
-              !utter.isFinancials
+              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+
           );
           this.displayData = this.listedLoadedUtterances;
           // draw the chart

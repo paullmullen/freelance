@@ -35,6 +35,7 @@ export class FolderPage implements OnInit {
   quoteCategories: any;
   quoteCategoriesArray;
   selectedQuotation: string;
+  qrCodeText: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -75,7 +76,10 @@ export class FolderPage implements OnInit {
     this.usersName = JSON.parse(localStorage.getItem('user')).displayName;
     this.usersEmail = JSON.parse(localStorage.getItem('user')).email;
     this.usersUid = JSON.parse(localStorage.getItem('user')).uid;
-    console.log(localStorage.getItem('selectedQuotation'));
+    this.qrCodeText =
+      'https://api.qrserver.com/v1/create-qr-code?data=' +
+      this.usersUid+'&amp;size=150x150';
+    console.log(this.usersUid);
     try {
       this.selectedQuotation = localStorage.getItem('selectedQuotation');
       if (this.selectedQuotation === null) {

@@ -1,6 +1,6 @@
 <ion-header>
   <form>
-    <ion-toolbar>
+    <ion-toolbar tagging="ngForm">
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
@@ -8,11 +8,8 @@
       <ion-buttons slot="end">
         <ion-label>Done</ion-label>
         <ion-toggle
-          #showCompletedItems
-          (ionChange)="onFilterUpdate(showCompletedItems, whatToShowChoice)"
-          value="toggleChanged"
-          unchecked
-        >
+          (ionChange)="onFilterUpdate('complete',$event)"
+          [(ngModel)]='this.lastShowComplete' name='lastShowComplete'>
         </ion-toggle>
       </ion-buttons>
     </ion-toolbar>
@@ -21,14 +18,12 @@
 
 <ion-content class="ion-padding">
   <ion-grid>
-    <form tagging="ngForm">
+    <form tagging="ngForm2">
       <ion-row>
         <ion-col size-md="6" offset-md="3">
           <ion-segment
-            (ionChange)="onFilterUpdate(showCompletedItems, whatToShowChoice)"
-            value="all"
-            #whatToShowChoice
-          >
+            (ionChange)="onFilterUpdate('whatToShow',$event)"
+            [(ngModel)]='this.lastWhatToShow' name='lastWhatToShow'>
             <ion-segment-button value="all">All </ion-segment-button>
             <ion-segment-button value="tagged">Tagged </ion-segment-button>
             <ion-segment-button value="untagged"
@@ -105,7 +100,6 @@
                   <ion-reorder slot="start"> </ion-reorder>
                 </ion-item>
                 <ion-item-options>
-
                   <ion-item-option
                     (click)="onTagUtterance(item_sub.id, item_sub.tag, item_sub.utterance, slidingUtterance)"
                   >
@@ -138,7 +132,6 @@
                   >
                     <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                   </ion-item-option>
-
                 </ion-item-options>
               </ion-item-sliding>
             </ng-container>

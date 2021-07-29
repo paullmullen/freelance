@@ -28,8 +28,8 @@ export class MyStuffPage implements OnInit, OnDestroy {
   totalUtterances: number;
   private usersUid: string;
   displayData: any;
-  private lastShowComplete: any;
-  private lastWhatToShow: any;
+  lastShowComplete = false;
+  lastWhatToShow = 'all';
 
   private TagSub: Subscription;
   loadedTags: TagData[];
@@ -61,7 +61,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
               (utter) =>
                 utter.user === this.usersUid &&
                 !(utter.complete === true) &&
-                !(utter.isFinancials === true)
+                (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
             );
           }
           const getData = this.groupMethod(
@@ -174,48 +174,57 @@ export class MyStuffPage implements OnInit, OnDestroy {
     return;
   }
 
-  onFilterUpdate(showComplete: any, whatToShow: any) {
-    this.lastShowComplete = showComplete;
-    this.lastWhatToShow = whatToShow;
+  onFilterUpdate(param, event) {
+    if (param === 'complete') {
+      this.lastShowComplete = event.detail.checked;
+    } else {
+      this.lastWhatToShow = event.detail.value;
+    }
     try {
-      if (showComplete.checked) {
+      if (this.lastShowComplete) {
         // show all items
-        if (whatToShow.value === 'all') {
+        if (this.lastWhatToShow === 'all') {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) =>
-              utter.user === this.usersUid && !utter.isFinancials === true
+              utter.user === this.usersUid  && (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
           );
-        } else if (whatToShow.value === 'tagged') {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.tag.length > 0 && utter.user === this.usersUid
-          );
-        } else {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) => utter.tag.length === 0 && utter.user === this.usersUid
-          );
-        }
-      } else {
-        // only show non-completed items
-        if (whatToShow.value === 'all') {
-          this.filteredUtterances = this.loadedUtterances.filter(
-            (utter) =>
-              utter.user === this.usersUid &&
-              utter.complete === false &&
-              !(utter.isFinancials === true)
-          );
-        } else if (whatToShow.value === 'tagged') {
+        } else if (this.lastWhatToShow === 'tagged') {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) =>
               utter.tag.length > 0 &&
               utter.user === this.usersUid &&
-              utter.complete === false
+              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
           );
         } else {
           this.filteredUtterances = this.loadedUtterances.filter(
             (utter) =>
               utter.tag.length === 0 &&
               utter.user === this.usersUid &&
-              utter.complete === false
+              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+          );
+        }
+      } else {
+        // only show non-completed items
+        if (this.lastWhatToShow === 'all') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              (utter.user === this.usersUid) && !(utter.complete === true) && (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+          );
+        } else if (this.lastWhatToShow === 'tagged') {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              utter.tag.length > 0 &&
+              utter.user === this.usersUid &&
+              !(utter.complete === true) &&
+              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+          );
+        } else {
+          this.filteredUtterances = this.loadedUtterances.filter(
+            (utter) =>
+              (utter.tag.length === 0 || !utter.tag.length) &&
+              utter.user === this.usersUid &&
+              !(utter.complete === true) &&
+              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
           );
         }
       }
@@ -241,7 +250,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
       this.findItemIdForEvent(event.detail.from),
       this.findProjectForEvent(event.detail.to)
     );
-    this.onFilterUpdate(this.lastShowComplete, this.lastWhatToShow);
+    this.onFilterUpdate(null, null);
     this.sortItems('project', 'asc');
     this.sortItems('importance', 'dec');
     this.sortItems('urgency', 'dec');
