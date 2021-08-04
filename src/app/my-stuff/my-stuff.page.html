@@ -68,9 +68,12 @@
             <ng-container *ngFor="let item of displayData">
               <ion-item *ngIf="!(item[0].trim()==='')">
                 <h2>{{item[0]}}</h2>
+                <ion-icon *ngIf=!this.projectFiltered name="filter-outline" slot="end" (click)="onFilterUpdate('project', item[0])"></ion-icon>
+                <ion-icon *ngIf=this.projectFiltered name="filter-circle-outline" slot="end" (click)="onFilterUpdate('project', item[0])"></ion-icon>
               </ion-item>
               <ion-item *ngIf="(item[0].trim()==='')">
                 <h2>No Project Assigned</h2>
+                <ion-icon name="filter-outline" slot="end"></ion-icon>
               </ion-item>
 
               <ion-item-sliding

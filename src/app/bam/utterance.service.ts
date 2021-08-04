@@ -1,4 +1,4 @@
-// import { User } from './../auth/user.model';
+import { User } from './../auth/auth';
 import { Utterance } from './utterance.model';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -18,7 +18,11 @@ interface UtteranceData {
   amount: number;
   archived: string;
   received: string;
+  read: string;
+  edit: string;
+  own: string;
 }
+
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +35,8 @@ export class UtteranceService {
   get utterances() {
     return this._utterances.asObservable();
   }
+
+
 
   @Output() utteranceCount = this._utteranceCount;
 
@@ -46,6 +52,7 @@ export class UtteranceService {
       })
     );
   }
+
 
   // ---------------------- Get Multiples -------------------------
   getUtterances() {
@@ -71,7 +78,10 @@ export class UtteranceService {
                   utterancesData[key].isFinancials,
                   utterancesData[key].amount,
                   utterancesData[key].archived,
-                  utterancesData[key].received
+                  utterancesData[key].received,
+                  utterancesData[key].read,
+                  utterancesData[key].edit,
+                  utterancesData[key].own
                 )
               );
               this._utteranceCount++;
@@ -84,6 +94,8 @@ export class UtteranceService {
         })
       );
   }
+
+
 
   // --------------------- additional utterance services---------------------
 
@@ -110,12 +122,10 @@ export class UtteranceService {
         'https://freelance-fe04c-default-rtdb.firebaseio.com/utterances.json',
         { ...newUtterance, id: null }
       )
-      .subscribe((data) => {
-        console.log(data);
+      .subscribe((snapshot) => {
+        console.log('added new utterance');
       });
-    this.utterances.pipe(take(1)).subscribe((utterances) => {
-      this._utterances.next(utterances.concat(newUtterance));
-    });
+    this.utterances.pipe(take(1)).subscribe();
   }
 
   // ---------------------------- additional tags services -------------------------
@@ -191,7 +201,6 @@ export class UtteranceService {
           updatedUtterances = [...utts];
           updatedUtterances[updatedUtteranceIndex].utterance = newContent;
 
-
           return this.http.patch(
             `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
             {
@@ -206,6 +215,155 @@ export class UtteranceService {
       )
       .subscribe(() => console.log('Updated Content'));
   }
+
+  updateSharing(
+    uttId: string,
+    newRule: string,
+    newUser: string,
+    userName: string
+  ) {
+    let updatedUtterances: Utterance[];
+    let readUsers: string[];
+    let isReader = false;
+    let readerString = '';
+    let editUsers: string[];
+    let isEditor = false;
+    let editorString = '';
+    let ownUsers: string[];
+    let isOwner = false;
+    let ownerString = '';
+
+    return this.utterances
+      .pipe(
+        take(1),
+        switchMap((utts) => {
+          const updatedUtteranceIndex = utts.findIndex(
+            (utt) => utt.id === uttId
+          );
+          updatedUtterances = [...utts];
+
+          try {
+            readUsers =
+              updatedUtterances[updatedUtteranceIndex].read.split(',');
+            isReader = readUsers.find((element) => element === newUser)
+              ? true
+              : false;
+          } catch {
+            readUsers = [''];
+          }
+          try {
+            editUsers =
+              updatedUtterances[updatedUtteranceIndex].edit.split(',');
+            isEditor = editUsers.find((element) => element === newUser)
+              ? true
+              : false;
+          } catch {
+            editUsers = [''];
+          }
+          try {
+            ownUsers = updatedUtterances[updatedUtteranceIndex].own.split(',');
+            isOwner = ownUsers.find((element) => element === newUser)
+              ? true
+              : false;
+          } catch {
+            ownUsers = [''];
+          }
+
+          switch (newRule) {
+            case 'addRead':
+              console.log('Adding Reader');
+              if (!isReader) {
+                readUsers.push(newUser);
+                readerString = readUsers.toString().substring(1);
+
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    read: readerString,
+                  }
+                );
+              }
+              break;
+            case 'dropRead':
+              console.log('Dropping Reader', isReader);
+              if (isReader) {
+                const currentPosition = readUsers.indexOf(newUser);
+                readUsers = readUsers.splice(currentPosition + 1, 1);
+                readerString = readUsers.toString().substring(1);
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    read: readerString,
+                  }
+                );
+              }
+
+              break;
+            case 'addEdit':
+              console.log('Adding Editor', editUsers);
+              if (!isEditor) {
+                editUsers.push(newUser);
+                editorString = editUsers.toString().substring(1);
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    edit: editorString,
+                  }
+                );
+              }
+              break;
+
+            case 'dropEdit':
+              console.log('Dropping Editor', isEditor);
+              if (isEditor) {
+                const currentPosition = editUsers.indexOf(newUser);
+                editUsers = editUsers.splice(currentPosition + 1, 1);
+                editorString = editUsers.toString().substring(1);
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    edit: editorString,
+                  }
+                );
+              }
+              break;
+            case 'addOwn':
+              console.log('Adding Owner');
+              if (!isOwner) {
+                ownUsers.push(newUser);
+                ownerString = ownUsers.toString().substring(1);
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    own: ownerString,
+                  }
+                );
+              }
+              break;
+            case 'dropOwn':
+              console.log('Dropping Owner', isOwner);
+              if (isOwner) {
+                const currentPosition = ownUsers.indexOf(newUser);
+                ownUsers = ownUsers.splice(currentPosition + 1, 1);
+                ownerString = ownUsers.toString().substring(1);
+                return this.http.patch(
+                  `https://freelance-fe04c-default-rtdb.firebaseio.com/utterances/${uttId}.json`,
+                  {
+                    own: ownerString,
+                  }
+                );
+              }
+              break;
+            default:
+          }
+        }),
+        tap((result) => {
+          this._utterances.next(updatedUtterances);
+        })
+      )
+      .subscribe();
+  }
+
   updateAmount(uttId: string, newAmount: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
@@ -253,7 +411,7 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' marked complete'));
   }
 
-  markUrgent(uttId: string,  state: string) {
+  markUrgent(uttId: string, state: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -277,7 +435,7 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' marked urgent', state));
   }
 
-  markImportant(uttId: string,  state: string) {
+  markImportant(uttId: string, state: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -325,7 +483,7 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' marked financials'));
   }
 
-  archive (uttId: string, date: string) {
+  archive(uttId: string, date: string) {
     let updatedUtterances: Utterance[];
     return this.utterances
       .pipe(
@@ -349,4 +507,3 @@ export class UtteranceService {
       .subscribe(() => console.log(uttId, ' archived'));
   }
 }
-

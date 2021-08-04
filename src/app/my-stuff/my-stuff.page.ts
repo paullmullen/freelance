@@ -37,6 +37,7 @@ export class MyStuffPage implements OnInit, OnDestroy {
   private bars: any;
   private colorArray: any;
   showDetailStatus = 'All';
+  projectFiltered = false;
 
   constructor(
     private UtteranceService: UtteranceService,
@@ -61,7 +62,9 @@ export class MyStuffPage implements OnInit, OnDestroy {
               (utter) =>
                 utter.user === this.usersUid &&
                 !(utter.complete === true) &&
-                (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+                utter.project !== 'Invoiced' &&
+                utter.project !== 'Received' &&
+                utter.project !== 'Forecast'
             );
           }
           const getData = this.groupMethod(
@@ -175,56 +178,85 @@ export class MyStuffPage implements OnInit, OnDestroy {
   }
 
   onFilterUpdate(param, event) {
-    if (param === 'complete') {
-      this.lastShowComplete = event.detail.checked;
+    if (param === 'project') {
+      if (!this.projectFiltered) {
+        this.listedLoadedUtterances = this.loadedUtterances.filter(
+          (utter) => utter.project === event
+        );
+        this.projectFiltered = true;
+      } else {
+        this.projectFiltered = false;
+        this.listedLoadedUtterances = this.loadedUtterances;
+      }
     } else {
-      this.lastWhatToShow = event.detail.value;
+      console.log('b');
+      this.listedLoadedUtterances = this.loadedUtterances;
+      if (param === 'complete') {
+        this.lastShowComplete = event.detail.checked;
+      } else {
+        this.lastWhatToShow = event.detail.value;
+      }
     }
     try {
       if (this.lastShowComplete) {
         // show all items
         if (this.lastWhatToShow === 'all') {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
-              utter.user === this.usersUid  && (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.user === this.usersUid &&
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         } else if (this.lastWhatToShow === 'tagged') {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
               utter.tag.length > 0 &&
               utter.user === this.usersUid &&
-              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         } else {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
               utter.tag.length === 0 &&
               utter.user === this.usersUid &&
-              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         }
       } else {
         // only show non-completed items
         if (this.lastWhatToShow === 'all') {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
-              (utter.user === this.usersUid) && !(utter.complete === true) && (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.user === this.usersUid &&
+              !(utter.complete === true) &&
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         } else if (this.lastWhatToShow === 'tagged') {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
               utter.tag.length > 0 &&
               utter.user === this.usersUid &&
               !(utter.complete === true) &&
-              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         } else {
-          this.filteredUtterances = this.loadedUtterances.filter(
+          this.filteredUtterances = this.listedLoadedUtterances.filter(
             (utter) =>
               (utter.tag.length === 0 || !utter.tag.length) &&
               utter.user === this.usersUid &&
               !(utter.complete === true) &&
-              (utter.project !== "Invoiced") && (utter.project !== "Received") && (utter.project !== "Forecast")
+              utter.project !== 'Invoiced' &&
+              utter.project !== 'Received' &&
+              utter.project !== 'Forecast'
           );
         }
       }
@@ -322,4 +354,5 @@ export class MyStuffPage implements OnInit, OnDestroy {
       return;
     }
   }
+
 }

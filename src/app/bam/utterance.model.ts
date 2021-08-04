@@ -11,6 +11,11 @@ export class Utterance {
     public isFinancials?: boolean,
     public amount?: number,
     public archived?: string,
-    public received?: string
+    public received?: string,
+    public read?: string,
+    public edit?: string,
+    public own?: string
   ) {}
+
 }
+

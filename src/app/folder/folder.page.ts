@@ -1,3 +1,5 @@
+import { UtteranceService } from './../bam/utterance.service';
+import { CollaboratorService } from './../bam/collaborator.service'
 import { DismissBamPage } from './../dismiss-bam/dismiss-bam.page';
 import { IonRouterOutlet, ModalController } from '@ionic/angular';
 import {
@@ -42,7 +44,9 @@ export class FolderPage implements OnInit {
     private speechRecognition: SpeechRecognition,
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private QuotationsService: QuotationsService
+    private QuotationsService: QuotationsService,
+    private UtteranceService: UtteranceService,
+    private CollaboratorService: CollaboratorService
   ) {}
 
   ngOnInit() {
@@ -173,5 +177,10 @@ export class FolderPage implements OnInit {
 
   onClickQuotationCategory(value: string) {
     localStorage.setItem('selectedQuotation', value);
+  }
+
+  onAddCollaborator()
+  {
+    this.CollaboratorService.addCollaborator('nTbpAT7DFWT7Tb0N6t5Mq87tIE12', 'V5lT0VFxvVO4ipY6VosKpl35iGw1', 'Julie');
   }
 }
